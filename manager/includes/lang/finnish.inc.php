@@ -2,7 +2,7 @@
 /**
  * MODX Manager language file
  *
- * @version 1.0.13
+ * @version 1.0.14
  * @date 2014/02/24
  * @author Mikko Lammi, www.maagit.fi, Kari Söderholm
  *
@@ -282,7 +282,7 @@ $_lang["existing_category"] = 'Kategoria';
 $_lang["expand_tree"] = 'Laajenna';
 $_lang["export_site"] = 'Vie sivusto';
 $_lang["export_site_cacheable"] = 'Kaikki sivut (myös välimuistiin tallentamattomat):';
-$_lang["export_site_exporting_document"] = 'Vie tiedostoa <strong>%s</strong> of <strong>%s</strong><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><i>%s</i>, id %s</small><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+$_lang["export_site_exporting_document"] = '[+status+] [+url+] - [+pagetitle+] ([+id+])<br />';
 $_lang["export_site_failed"] = 'Epäonnistui!';
 $_lang["export_site_failed_no_open"] = 'Tiedostoa ei voi avata: ';
 $_lang["export_site_failed_no_retrieve"] = 'Sivua ei voi noutaa.';
@@ -841,7 +841,7 @@ $_lang["role_web_user_management"] = 'Web-käyttäjän hallinta';
 $_lang["rss_url_news_default"] = 'http://feeds.feedburner.com/modx-announce';
 $_lang["rss_url_news_message"] = 'Anna MODX-uutisten osoite (RSS-syöte).';
 $_lang["rss_url_news_title"] = 'RSS / Uutiset';
-$_lang["rss_url_security_default"] = 'http://feeds.feedburner.com/modxsecurity';
+$_lang["rss_url_security_default"] = 'http://forums.modx.com/board.xml?board=295';
 $_lang["rss_url_security_message"] = 'Anna MODX-tietoturvatiedotteiden osoite (RSS-syöte).';
 $_lang["rss_url_security_title"] = 'RSS / Tietoturvatiedotteet';
 $_lang["run_module"] = 'Suorita moduuli';
@@ -856,6 +856,8 @@ $_lang["search_criteria_content"] = 'Sisältö';
 $_lang["search_criteria_content_msg"] = 'Hae sivut, joiden sisällöstä löytyy syötetty teksti.';
 $_lang["search_criteria_id"] = 'ID';
 $_lang["search_criteria_id_msg"] = 'Hae sivu ID-tunnuksella.';
+$_lang["search_criteria_template_id"] = 'Sivupohjan ID';
+$_lang["search_criteria_template_id_msg"] = 'Hae sivut, jotka käyttävät annettua sivupohjaa.';
 $_lang["search_criteria_longtitle"] = 'Pitkä otsikko';
 $_lang["search_criteria_longtitle_msg"] = 'Hae sivut, joiden pitkästä otsikosta löytyy syötetty teksti.';
 $_lang["search_criteria_title"] = 'Otsikko';
@@ -1191,6 +1193,7 @@ $_lang['email_method_mail'] = 'mail() PHP function';
 $_lang['email_method_smtp'] = 'SMTP Server';
 $_lang['smtp_auth_title'] = 'SMTP－AUTH';
 $_lang['smtp_host_title'] = 'SMTP host';
+$_lang['smtp_secure_title'] = 'Encrypted SMTP';
 $_lang['smtp_username_title'] = 'SMTP user name';
 $_lang['smtp_password_title'] = 'SMTP password';
 $_lang['smtp_port_title'] = 'SMTP port';
@@ -1258,4 +1261,17 @@ $_lang["login_processor_wrong_password"]     = "Virheellinen käyttäjätunnus t
 $_lang["login_processor_many_failed_logins"] = "Kirjautumisesi on estetty liian monen epäonnistuneen kirjautumisyrityksen johdosta!";
 $_lang["login_processor_blocked1"]           = "Et voi kirjautua sisään, koska kirjautumisesi on estetty!";
 $_lang["login_processor_blocked2"]           = "Et voi kirjautua sisään, koska kirjautumisesi on estetty! Ole hyvä ja yritä myöhemmin uudelleen.";
+$_lang["login_processor_blocked3"]           = "You are blocked automatic after a specified date and you cannot log in anymore!";
 $_lang["login_processor_bad_code"]           = "Syöttämäsi varmistuskoodi oli virheellinen! Ole hyvä ja yritä uudelleen!";
+$_lang["login_processor_remotehost_ip"]      = "Your hostname doesn't point back to your IP!";
+$_lang["login_processor_remote_ip"]          = "You are not allowed to login from this location.";
+$_lang["login_processor_date"]               = "You are not allowed to login at this time. Please try again later.";
+$_lang["login_processor_captcha_config"]     = "Captcha is not configured properly.";
+
+$_lang["dp_dayNames"]   = "['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']";
+$_lang["dp_monthNames"] = "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']";
+$_lang["dp_startDay"]   = "1";
+
+$_lang["check_all"] = "Select all";
+$_lang["check_none"] = "Select none";
+$_lang["check_toggle"] = "Toggle selection";

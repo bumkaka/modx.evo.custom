@@ -2,7 +2,7 @@
 /**
  * MODX Manager language file
  *
- * @version 1.0.13
+ * @version 1.0.14
  * @date 2014/02/24
  * @author The MODX Project Team
  *
@@ -841,7 +841,7 @@ $_lang["role_web_user_management"] = 'Web user management';
 $_lang["rss_url_news_default"] = 'http://feeds.feedburner.com/modx-announce';
 $_lang["rss_url_news_message"] = 'Enter the URL for the MODX News Feed.';
 $_lang["rss_url_news_title"] = 'RSS News Feed';
-$_lang["rss_url_security_default"] = 'http://feeds.feedburner.com/modxsecurity';
+$_lang["rss_url_security_default"] = 'http://forums.modx.com/board.xml?board=295';
 $_lang["rss_url_security_message"] = 'Enter the URL for the MODX Security Feed.';
 $_lang["rss_url_security_title"] = 'RSS Security Feed';
 $_lang["run_module"] = 'Run Module';
@@ -856,6 +856,10 @@ $_lang["search_criteria_content"] = 'Search by content';
 $_lang["search_criteria_content_msg"] = 'Find all Resources with the entered text in their content.';
 $_lang["search_criteria_id"] = 'Search by ID';
 $_lang["search_criteria_id_msg"] = 'Enter a Resource\'s ID to quickly locate that Resource.';
+$_lang["search_criteria_top"] = 'Search in main fields';
+$_lang["search_criteria_top_msg"] = 'ID, Pagetitle, Longtitle, alias';
+$_lang["search_criteria_template_id"] = 'Search by template ID';
+$_lang["search_criteria_template_id_msg"] = 'Find all Resources using the specified template.';
 $_lang["search_criteria_longtitle"] = 'Search by long title';
 $_lang["search_criteria_longtitle_msg"] = 'Find all Resources with the entered text in their long title.';
 $_lang["search_criteria_title"] = 'Search by title';
@@ -1192,6 +1196,7 @@ $_lang['email_method_mail'] = 'PHP mail() function';
 $_lang['email_method_smtp'] = 'SMTP Server';
 $_lang['smtp_auth_title'] = 'SMTP-AUTH';
 $_lang['smtp_host_title'] = 'SMTP host';
+$_lang['smtp_secure_title'] = 'Encrypted SMTP';
 $_lang['smtp_username_title'] = 'SMTP user name';
 $_lang['smtp_password_title'] = 'SMTP password';
 $_lang['smtp_port_title'] = 'SMTP port';
@@ -1212,6 +1217,8 @@ $_lang["cache_type_1"] = 'Cache is based only on Resource ID (standard)';
 $_lang["cache_type_2"] = 'Cache is based on Resource ID and $_GET parameters';
 $_lang["seostrict_title"] = 'Use SEO Strict URLs';
 $_lang["seostrict_message"] = 'Enforces the use of strict URLs to prevent duplicate content (if needed)';
+$_lang["aliaslistingfolder_title"] = 'Use AliasListing only for Folders';
+$_lang["aliaslistingfolder_message"] = 'Reduces memory consumption when a large number of resources';
 
 $_lang["settings_friendlyurls_alert"] = 'It is necessary to rename the ht.access file in the MODX installation directory at .htaccess to use the Friendly URL function.';
 $_lang["settings_friendlyurls_alert2"] = 'Since MODX was installed in a subdirectory, it is necessary to change the content of .htaccess.';
@@ -1259,4 +1266,17 @@ $_lang["login_processor_wrong_password"]     = "Incorrect username or password e
 $_lang["login_processor_many_failed_logins"] = "Due to too many failed logins, you have been blocked!";
 $_lang["login_processor_blocked1"]           = "You are blocked and cannot log in!";
 $_lang["login_processor_blocked2"]           = "You are blocked and cannot log in! Please try again later.";
+$_lang["login_processor_blocked3"]           = "You are blocked automatic after a specified date and you cannot log in anymore!";
 $_lang["login_processor_bad_code"]           = "The security code you entered didn't validate! Please try to login again!";
+$_lang["login_processor_remotehost_ip"]      = "Your hostname doesn't point back to your IP!";
+$_lang["login_processor_remote_ip"]          = "You are not allowed to login from this location.";
+$_lang["login_processor_date"]               = "You are not allowed to login at this time. Please try again later.";
+$_lang["login_processor_captcha_config"]     = "Captcha is not configured properly.";
+
+$_lang["dp_dayNames"]   = "['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']";
+$_lang["dp_monthNames"] = "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']";
+$_lang["dp_startDay"]   = "1";
+
+$_lang["check_all"] = "Select all";
+$_lang["check_none"] = "Select none";
+$_lang["check_toggle"] = "Toggle selection";

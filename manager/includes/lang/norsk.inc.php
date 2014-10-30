@@ -2,7 +2,7 @@
 /**
  * MODX Manager language file
  *
- * @version 1.0.13
+ * @version 1.0.14
  * @date 2014/02/24
  * @author The MODX Project Team
  *
@@ -282,7 +282,7 @@ $_lang["existing_category"] = 'Eksisterende kategori';
 $_lang["expand_tree"] = 'Utvid tre';
 $_lang["export_site"] = 'Eksporter webplass';
 $_lang["export_site_cacheable"] = 'Inkludere&nbsp;ikke<br />cachebare&nbsp;filer';
-$_lang["export_site_exporting_document"] = 'Eksporterer fil <b>%s</b> av <b>%s</b><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><i>%s</i>, id %s</small><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+$_lang["export_site_exporting_document"] = '[+status+] [+url+] - [+pagetitle+] ([+id+])<br />';
 $_lang["export_site_failed"] = '<span style=\'color:#990000\'>Mislyktes!</span>';
 $_lang["export_site_failed_no_open"] = 'Cannot open file: ';
 $_lang["export_site_failed_no_retrieve"] = 'Cannot retrieve document.';
@@ -841,7 +841,7 @@ $_lang["role_web_user_management"] = 'Håndtere webbrukere';
 $_lang["rss_url_news_default"] = 'http://feeds.feedburner.com/modx-announce';
 $_lang["rss_url_news_message"] = 'Enter the URL for the MODX News Feed.';
 $_lang["rss_url_news_title"] = 'RSS News Feed';
-$_lang["rss_url_security_default"] = 'http://feeds.feedburner.com/modxsecurity';
+$_lang["rss_url_security_default"] = 'http://forums.modx.com/board.xml?board=295';
 $_lang["rss_url_security_message"] = 'Enter the URL for the MODX Security Feed.';
 $_lang["rss_url_security_title"] = 'RSS Security Feed';
 $_lang["run_module"] = 'Kjør modul';
@@ -856,6 +856,8 @@ $_lang["search_criteria_content"] = 'Søk etter innhold';
 $_lang["search_criteria_content_msg"] = 'Finn samtlige dokumenter med søketeksten i innholdet.';
 $_lang["search_criteria_id"] = 'Søk etter ID';
 $_lang["search_criteria_id_msg"] = 'Skriv dokumentets ID for å kjapt lokalisere dokumentet.';
+$_lang["search_criteria_template_id"] = 'Search by template ID';
+$_lang["search_criteria_template_id_msg"] = 'Find all Resources using the specified template.';
 $_lang["search_criteria_longtitle"] = 'Søk etter lang tittel';
 $_lang["search_criteria_longtitle_msg"] = 'Finn alle dokument med søkteksten i den lange tittelen.';
 $_lang["search_criteria_title"] = 'Søk etter tittel';
@@ -1159,6 +1161,7 @@ $_lang['email_method_mail'] = 'mail() PHP function';
 $_lang['email_method_smtp'] = 'SMTP Server';
 $_lang['smtp_auth_title'] = 'SMTP－AUTH';
 $_lang['smtp_host_title'] = 'SMTP host';
+$_lang['smtp_secure_title'] = 'Encrypted SMTP';
 $_lang['smtp_username_title'] = 'SMTP user name';
 $_lang['smtp_password_title'] = 'SMTP password';
 $_lang['smtp_port_title'] = 'SMTP port';
@@ -1226,4 +1229,17 @@ $_lang["login_processor_wrong_password"]     = "Incorrect username or password e
 $_lang["login_processor_many_failed_logins"] = "Due to too many failed logins, you have been blocked!";
 $_lang["login_processor_blocked1"]           = "You are blocked and cannot log in!";
 $_lang["login_processor_blocked2"]           = "You are blocked and cannot log in! Please try again later.";
+$_lang["login_processor_blocked3"]           = "You are blocked automatic after a specified date and you cannot log in anymore!";
 $_lang["login_processor_bad_code"]           = "The security code you entered didn't validate! Please try to login again!";
+$_lang["login_processor_remotehost_ip"]      = "Your hostname doesn't point back to your IP!";
+$_lang["login_processor_remote_ip"]          = "You are not allowed to login from this location.";
+$_lang["login_processor_date"]               = "You are not allowed to login at this time. Please try again later.";
+$_lang["login_processor_captcha_config"]     = "Captcha is not configured properly.";
+
+$_lang["dp_dayNames"]   = "['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']";
+$_lang["dp_monthNames"] = "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']";
+$_lang["dp_startDay"]   = "1";
+
+$_lang["check_all"] = "Select all";
+$_lang["check_none"] = "Select none";
+$_lang["check_toggle"] = "Toggle selection";

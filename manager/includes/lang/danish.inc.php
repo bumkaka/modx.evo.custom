@@ -2,7 +2,7 @@
 /**
  * MODX Manager language file
  *
- * @version 1.0.13
+ * @version 1.0.14
  * @date 2014/02/24
  * @author Henrik Nielsen
  * @author Mads Vestmar
@@ -283,7 +283,7 @@ $_lang["existing_category"] = 'Eksisterende kategori';
 $_lang["expand_tree"] = 'Udvid website træet';
 $_lang["export_site"] = 'Eksporter statisk HTML';
 $_lang["export_site_cacheable"] = 'Inkluder ikke cache bare filer:';
-$_lang["export_site_exporting_document"] = 'Eksport fil <b>%s</b> af <b>%s</b><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><i>%s</i>, id %s</small><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+$_lang["export_site_exporting_document"] = '[+status+] [+url+] - [+pagetitle+] ([+id+])<br />';
 $_lang["export_site_failed"] = 'Mislykket!';
 $_lang["export_site_failed_no_open"] = 'Kan ikke åbne fil: ';
 $_lang["export_site_failed_no_retrieve"] = 'Kan ikke hente dokument.';
@@ -842,7 +842,7 @@ $_lang["role_web_user_management"] = 'Webbruger administration';
 $_lang["rss_url_news_default"] = 'http://feeds.feedburner.com/modx-announce';
 $_lang["rss_url_news_message"] = 'Indtast URL\'en til MODX nyheds feed.';
 $_lang["rss_url_news_title"] = 'RSS nyheds Feed';
-$_lang["rss_url_security_default"] = 'http://feeds.feedburner.com/modxsecurity';
+$_lang["rss_url_security_default"] = 'http://forums.modx.com/board.xml?board=295';
 $_lang["rss_url_security_message"] = 'Indtast URL\'en til MODX feed om sikkerhed.';
 $_lang["rss_url_security_title"] = 'RSS feed om sikkerhed';
 $_lang["run_module"] = 'Kør modulet';
@@ -857,6 +857,8 @@ $_lang["search_criteria_content"] = 'Søg i indhold';
 $_lang["search_criteria_content_msg"] = 'Find alle ressourcer med denne tekst i indholdet.';
 $_lang["search_criteria_id"] = 'Søg efter ID';
 $_lang["search_criteria_id_msg"] = 'Indtast en ressources ID for at kunne finde den hurtigt.';
+$_lang["search_criteria_template_id"] = 'Search by template ID';
+$_lang["search_criteria_template_id_msg"] = 'Find all Resources using the specified template.';
 $_lang["search_criteria_longtitle"] = 'Søg i ressourcens lange titel';
 $_lang["search_criteria_longtitle_msg"] = 'Find alle ressourcer med denne tekst i den lange titel.';
 $_lang["search_criteria_title"] = 'Søg i titlen';
@@ -1195,6 +1197,7 @@ $_lang['email_method_mail'] = 'mail() PHP function';
 $_lang['email_method_smtp'] = 'SMTP Server';
 $_lang['smtp_auth_title'] = 'SMTP－AUTH';
 $_lang['smtp_host_title'] = 'SMTP host';
+$_lang['smtp_secure_title'] = 'Encrypted SMTP';
 $_lang['smtp_username_title'] = 'SMTP user name';
 $_lang['smtp_password_title'] = 'SMTP password';
 $_lang['smtp_port_title'] = 'SMTP port';
@@ -1262,4 +1265,17 @@ $_lang["login_processor_wrong_password"]     = "Incorrect username or password e
 $_lang["login_processor_many_failed_logins"] = "Due to too many failed logins, you have been blocked!";
 $_lang["login_processor_blocked1"]           = "You are blocked and cannot log in!";
 $_lang["login_processor_blocked2"]           = "You are blocked and cannot log in! Please try again later.";
+$_lang["login_processor_blocked3"]           = "You are blocked automatic after a specified date and you cannot log in anymore!";
 $_lang["login_processor_bad_code"]           = "The security code you entered didn't validate! Please try to login again!";
+$_lang["login_processor_remotehost_ip"]      = "Your hostname doesn't point back to your IP!";
+$_lang["login_processor_remote_ip"]          = "You are not allowed to login from this location.";
+$_lang["login_processor_date"]               = "You are not allowed to login at this time. Please try again later.";
+$_lang["login_processor_captcha_config"]     = "Captcha is not configured properly.";
+
+$_lang["dp_dayNames"]   = "['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']";
+$_lang["dp_monthNames"] = "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']";
+$_lang["dp_startDay"]   = "1";
+
+$_lang["check_all"] = "Select all";
+$_lang["check_none"] = "Select none";
+$_lang["check_toggle"] = "Toggle selection";

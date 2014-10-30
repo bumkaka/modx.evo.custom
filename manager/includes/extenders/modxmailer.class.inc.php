@@ -35,10 +35,11 @@ class MODxMailer extends PHPMailer
 		{
 		    case 'smtp':
                 $this->IsSMTP();
-                $this->Host      = $modx->config['smtp_host'] . ':' . $modx->config['smtp_port'];
-                $this->SMTPAuth  = $modx->config['smtp_auth']==='1' ? true : false;
-                $this->Username  = $modx->config['smtp_username'];
-                $this->Password  = $modx->config['smtppw'];
+                $this->SMTPSecure = $modx->config['smtp_secure']==='none' ? '' : $modx->config['smtp_secure'];
+                $this->Host       = $modx->config['smtp_host'] . ':' . $modx->config['smtp_port'];
+                $this->SMTPAuth   = $modx->config['smtp_auth']==='1' ? true : false;
+                $this->Username   = $modx->config['smtp_username'];
+                $this->Password   = $modx->config['smtppw'];
                 if(10<strlen($this->Password))
                 {
                 	$this->Password = substr($this->Password,0,-7);
@@ -58,11 +59,12 @@ class MODxMailer extends PHPMailer
 		
 		if(isset($modx->config['mail_charset']) && !empty($modx->config['mail_charset'])) {
 			$mail_charset = $modx->config['mail_charset'];
-		}
-		else {
-			$mail_charset = strtolower($modx->config['manager_language']);
-    		if(substr($mail_charset,0,8)==='japanese') $mail_charset = 'jis';
-    		else                                       $mail_charset = 'utf8';
+		} else {
+			if (substr($modx->config['manager_language'], 0, 8) === 'japanese') {
+				$mail_charset = 'jis';
+			} else {
+				$mail_charset = $modx->config['modx_charset'];
+			}
 		}
 		
 		switch($mail_charset)
@@ -78,6 +80,9 @@ class MODxMailer extends PHPMailer
 				$this->mb_language = 'Japanese';
 				$this->encode_header_method = 'mb_encode_mimeheader';
 				$this->IsHTML(false);
+				break;
+			case 'windows-1251':
+				$this->CharSet     = 'cp1251';
 				break;
 			case 'utf8':
 			case 'utf-8':

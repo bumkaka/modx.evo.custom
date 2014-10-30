@@ -9,8 +9,9 @@ $modx->invokeEvent('OnManagerPreFrameLoader',array('action'=>$action));
 <!DOCTYPE html>
 <html <?php echo (isset($modx_textdir) && $modx_textdir ? 'dir="rtl" lang="' : 'lang="').$mxla.'" xml:lang="'.$mxla.'"'; ?>>
 <head>
-	<title><?php echo $site_name?> - (MODX CMS Manager)</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $modx_manager_charset?>" />
+    <title><?php echo $site_name?> - (MODX CMS Manager)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $modx_manager_charset?>" />
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100% }
         body { position: relative }
@@ -28,11 +29,23 @@ $modx->invokeEvent('OnManagerPreFrameLoader',array('action'=>$action));
             width:16px;
             height:16px;
         }
+        #resizer2 { position: absolute; top: 85px; right: 15px; width: 3px; z-index: 999;}
+        #resizer2 #hideTopMenu {display:block;
+            margin-top:-4px;
+            margin-left:-9px;
+            cursor:pointer;
+            background:transparent url(media/style/<?php echo $modx->config['manager_theme']; ?>/images/icons/application_get.png)!important;
+            width:16px;
+            height:16px;
+        }
     </style>
 </head>
 <body>
     <div id="resizer">
         <a id="hideMenu" onclick="mainMenu.toggleTreeFrame();"></a>
+    </div>
+    <div id="resizer2">
+        <a id="hideTopMenu" onclick="mainMenu.toggleMenuFrame();"></a>
     </div>
     <div id="mainMenu">
         <iframe name="mainMenu" src="index.php?a=1&amp;f=menu" scrolling="no" frameborder="0" noresize="noresize"></iframe>
@@ -44,7 +57,8 @@ $modx->invokeEvent('OnManagerPreFrameLoader',array('action'=>$action));
     <div id="main">
         <iframe name="main" src="index.php?a=2" scrolling="auto" frameborder="0" onload="if (mainMenu.stopWork()) mainMenu.stopWork();"></iframe>
     </div>
-
+    
+    <!--<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>-->
     <script language="JavaScript" type="text/javascript">
         var _startY = 85;
         var _dragElement;

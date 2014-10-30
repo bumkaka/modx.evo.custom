@@ -287,8 +287,12 @@ form select
 		-webkit-border-radius:3px;
 		border-radius:3px;
 }
+form select.dropdown, form select[size="1"], form select:not([size]) {
+    height: 28px;
+}
 form input[type="text"],
 form input[type="password"],
+form input[type="number"],
 form textarea {
 	background: #f9f9f9;
 	border-color: #999 #DDD #DDD #999;
@@ -314,6 +318,7 @@ input[type="password"]:focus,
 input[type="search"]:focus,
 input[type="text"]:focus,
 input[type="url"]:focus,
+input[type="number"]:focus,
 textarea:focus,
 select:focus
 {
@@ -673,6 +678,10 @@ div.treeNode {
     padding: 1px 2px;
 	margin-left:-3px;
 }
+.treeNodeSelected
+{
+    font-weight:700;
+}
 .unpublished a, .unpublishedNode, .unpublish {
 	color: #B68282;
 	font-style: italic;
@@ -754,7 +763,11 @@ padding:5px;
 .searchbar {
 	width: 100%;
 }
+.searchbar table {
+	margin-top:-3px;
+}
 .searchtext {
+	margin-top:-5px!important;
 	height: 18px;
 	padding: 2px;
 }
@@ -1518,9 +1531,14 @@ form#mutate input.disabled {
 form#mutate select.inputBox,
 form#mutate input,
 form#mutate textarea {
-	width: 300px;
+    width: 300px;
+}
+form#mutate select {
+    width: 308px;
 }
 #tv_body input[type="text"],
+#tv_body input[type="password"],
+#tv_body input[type="number"],
 #tv_body textarea
 {
 	background: none repeat scroll 0 0 #FFFFFF;
@@ -1702,7 +1720,7 @@ input:focus.DatePicker, #mutate input:focus.DatePicker, #userPane input:focus.Da
 	background-color: #fff;
 	border: 1px solid #0070bf;
 	position: absolute;
-	width: 177px;
+	width: 325px;
 	top: 24px;
 	left: 0;
 	margin: 0px 0px 3px 0px;

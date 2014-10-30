@@ -66,7 +66,7 @@ tinyMCE.init({
 			// State get is set when contents is extracted from editor
 			if (o.get)
 			{
-				o.content = o.content.replace('<p>{{', '{{');
+				o.content = o.content.replace('<p>{' + '{', '{' + '{');
 				o.content = o.content.replace('}}</p>', '}}');
 				o.content = o.content.replace(/<p>\[([\[\!\~\^])/g, '[$1');
 				o.content = o.content.replace(/([\]\!\~\^])\]<\/p>/g, '$1]');
@@ -80,4 +80,5 @@ tinyMCE.init({
 
 <style type="text/css">
 .clearlooks2_modalBlocker {background-color:#333;}
+.defaultSkin table.mceToolbar, .defaultSkin tr.mceFirst .mceToolbar tr td, .defaultSkin tr.mceLast .mceToolbar tr td {border:0; margin:0; padding:0!important;}
 </style>

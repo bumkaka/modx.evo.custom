@@ -716,11 +716,11 @@ UPDATE `{PREFIX}system_settings` SET `setting_value` = '0' WHERE `setting_name` 
 
 UPDATE `{PREFIX}site_content` SET `type`='reference', `contentType`='text/html' WHERE `type`='' AND `content` REGEXP '^https?://([-\w\.]+)+(:\d+)?/?';
 
-UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/xml' WHERE `type`='' AND `alias` REGEXP '[.period.](rss|xml)$';
+UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/xml' WHERE `type`='' AND `alias` REGEXP '\.(rss|xml)$';
 
-UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/javascript' WHERE `type`='' AND `alias` REGEXP '[.period.]js$';
+UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/javascript' WHERE `type`='' AND `alias` REGEXP '\.js$';
 
-UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/css' WHERE `type`='' AND `alias` REGEXP '[.period.]css$';
+UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/css' WHERE `type`='' AND `alias` REGEXP '\.css$';
 
 UPDATE `{PREFIX}site_content` SET `type`='document', `contentType`='text/html' WHERE `type`='';
 
@@ -762,7 +762,7 @@ ALTER TABLE `{PREFIX}web_user_attributes`
  ADD COLUMN `street` varchar(255) NOT NULL DEFAULT '' AFTER `country`,
  ADD COLUMN `city` varchar(255) NOT NULL DEFAULT '' AFTER `street`;
 
-ALTER TABLE  `{PREFIX}site_content` ADD COLUMN `alias_visible` INT( 2 ) NOT NULL DEFAULT  '1';
+ALTER TABLE `{PREFIX}site_content` ADD COLUMN `alias_visible` INT(2) NOT NULL DEFAULT '1' COMMENT 'Hide document from alias path';
 
 # ]]upgrade-able
 
@@ -810,7 +810,7 @@ REPLACE INTO `{PREFIX}user_roles`
 
 INSERT IGNORE INTO `{PREFIX}system_settings` 
 (setting_name, setting_value) VALUES 
-('manager_theme','MODxRE'),
+('manager_theme','D3X'),
 ('settings_version',''),
 ('show_meta','0'),
 ('server_offset_time','0'),
@@ -1036,9 +1036,10 @@ REPLACE INTO `{PREFIX}system_eventnames`
 ('212','OnManagerNodePrerender','2',''),
 ('213','OnManagerNodeRender','2',''),
 ('214','OnManagerMenuPrerender','2',''),
+('224','OnDocFormTemplateRender','1','Documents'),
 ('999','OnPageUnauthorized','1',''),
-('1000','OnPageNotFound','1','');
-
+('1000','OnPageNotFound','1',''),
+('1001','OnFileBrowserUpload','1','File Browser Events');
 
 # ^ I don't think we need more than 1000 built-in events. Custom events will start at 1001
 
@@ -1084,10 +1085,10 @@ UPDATE `{PREFIX}user_roles` SET
 
 
 UPDATE `{PREFIX}user_settings` SET
-  `setting_value`='MODxRE'
+  `setting_value`='D3X'
   WHERE `setting_name`='manager_theme';
 
 
-REPLACE INTO `{PREFIX}system_settings` (setting_name, setting_value) VALUES ('manager_theme','MODxRE');
+REPLACE INTO `{PREFIX}system_settings` (setting_name, setting_value) VALUES ('manager_theme','D3X');
 
 UPDATE `{PREFIX}system_settings` set setting_value = if(setting_value REGEXP 'application/json',setting_value,concat_ws(",",setting_value,"application/json")) WHERE setting_name='custom_contenttype';
