@@ -260,7 +260,16 @@ $_dfnMaxlength = 6;
 							}elseif ($isRequired==1 && ($_FILES[$name] && $_FILES[$name]['type']=='')){
 								$rMsg[count($rMsg)]=$desc;
 								$rClass[$name]=$requiredClass;
-							}elseif ($_FILES[$name]['tmp_name']){
+                            }
+                            elseif(is_array($_FILES[$name]['name'])) {
+                           
+                                foreach($_FILES[$name]['name'] as $key => $fileValue) {
+                                
+                                    if( substr($fld[5],0,5)!="#LIST" || validateField($_FILES[$name]['name'][$key],$fld,$vMsg,$isDebug) )
+                            									$attachments[count($attachments)] = $_FILES[$name]['tmp_name'][$key];
+                                }
+                            }
+                            elseif ($_FILES[$name]['tmp_name']){
 								if( substr($fld[5],0,5)!="#LIST" || validateField($_FILES[$name]['name'],$fld,$vMsg,$isDebug) )
 									$attachments[count($attachments)] = $_FILES[$name]['tmp_name'];
 								else $rClass[$name]=$invalidClass;
@@ -362,11 +371,17 @@ $_dfnMaxlength = 6;
 						case "file":
 							// set file name
 							if($value['type']!="" && $value['type']!=""){
-								$value = $value["name"];
-								$patharray = explode(((strpos($value,"/")===false)? "\\":"/"), $value);
-								$value = $patharray[count($patharray)-1];
-							}
-							else {
+
+								if (array($value["name"])){
+									$value = $value[0]["name"];
+									$patharray = explode(((strpos($value,"/")===false)? "\\":"/"), $value);
+									$value = $patharray[count($patharray)-1];
+								} else {
+									$value = $value["name"];
+									$patharray = explode(((strpos($value,"/")===false)? "\\":"/"), $value);
+									$value = $patharray[count($patharray)-1];
+								}
+							}else {
 								$value = "";
 							}
 							break;
@@ -741,9 +756,25 @@ function AttachFilesToMailer(&$mail,&$attachFiles) {
 			$contentType = "application/octetstream";
 			if (is_uploaded_file($attachFile)){
 				foreach($_FILES as $n => $v){
+
+                    if(is_array($_FILES[$n]['name'])) {
+                        foreach($_FILES[$n]['name'] as $key=>$valueFile) {
+
+                           if($_FILES[$n]['tmp_name'][$key]==$attachFile) {
+
+                                $FileName = $_FILES[$n]['name'][$key];
+                                //$contentType = $_FILES[$n]['tmp_name'][$key];
+                                 $contentType = $_FILES[$n]['type'][$key];
+                                                            }
+
+
+                        }  
+                    } else {
 					if($_FILES[$n]['tmp_name']==$attachFile) {
 						$FileName = $_FILES[$n]['name'];
 						$contentType = $_FILES[$n]['type'];
+
+                        }
 					}
 				}
 			}
