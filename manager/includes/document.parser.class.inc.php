@@ -68,6 +68,11 @@ class DocumentParser {
     function DocumentParser() {
         global $database_server;
         if(substr(PHP_OS,0,3) === 'WIN' && $database_server==='localhost') $database_server = '127.0.0.1';
+
+
+        if ( !isset( $this->modifiers ) ) $this->loadExtension('modifiers');
+
+        
         $this->loadExtension('DBAPI') or die('Could not load DBAPI class.'); // load DBAPI class
         $this->dbConfig= & $this->db->config; // alias for backward compatibility
         $this->jscripts= array ();
@@ -827,18 +832,27 @@ class DocumentParser {
 			return $content;
 		$replace = array();
 		$matches = $this->getTagsFromContent($content, '[*', '*]');
-		if ($matches) {
+        
+        if ($matches) {
 			for ($i = 0; $i < count($matches[1]); $i++) {
 				if ($matches[1][$i]) {
+                    $mods = array();
 					$key = $matches[1][$i];
 					$key = substr($key, 0, 1) == '#' ? substr($key, 1) : $key; // remove # for QuickEdit format
+
+                    if ( strpos($key , ':') !== false ){
+                        $mods = explode(':',$key);
+                        $key = $mods[0];
+                    }
+
 					$value = $this->documentObject[$key];
 					if (is_array($value)) {
 						include_once MODX_MANAGER_PATH . 'includes/tmplvars.format.inc.php';
 						include_once MODX_MANAGER_PATH . 'includes/tmplvars.commands.inc.php';
 						$value = getTVDisplayFormat($value[0], $value[1], $value[2], $value[3], $value[4]);
 					}
-					$replace[$i] = $value;
+                    $mods[0] = $value;
+					$replace[$i] = $this->modifiers->parse($value,implode(':',$mods) );
 				}
 			}
 			$content = str_replace($matches[0], $replace, $content);
@@ -916,14 +930,23 @@ class DocumentParser {
 		$matches = $this->getTagsFromContent($content, '[+', '+]');
 		if ($matches) {
 			for ($i = 0; $i < count($matches[1]); $i++) {
-				$v = '';
+				$value = '';
+                $mods = array();
+                if ( strpos($matches[1][$i] , ':') !== false ){
+                    $mods = explode(':',$matches[1][$i]);
+                    $key = $mods[0];
+                }
+
+
 				$key = $matches[1][$i];
 				if ($key && is_array($this->placeholders) && array_key_exists($key, $this->placeholders))
-					$v = $this->placeholders[$key];
-				if ($v === '')
+					$value = $this->placeholders[$key];
+				if ($value === '')
 					unset($matches[0][$i]); // here we'll leave empty placeholders for last.
-				else
-					$replace[$i] = $v;
+				else {
+                    $mods[0] = $value;
+                    $replace[$i] = $this->modifiers->parse($value,implode(':',$mods) );
+                }
 			}
 			$content = str_replace($matches[0], $replace, $content);
 		}
@@ -1501,7 +1524,7 @@ class DocumentParser {
      * - finally calls prepareResponse()
      */
     function executeParser() {
-
+       
         //error_reporting(0);
             set_error_handler(array (
                 & $this,
@@ -2545,14 +2568,19 @@ class DocumentParser {
      * @return {string} - Parsed text.
      */
 	function parseText($chunk, $chunkArr, $prefix = '[+', $suffix = '+]'){
-		if (!is_array($chunkArr)){
-			return $chunk;
-		}
+		if (!is_array($chunkArr)) return $chunk;
 		
 		foreach ($chunkArr as $key => $value){
-			$chunk = str_replace($prefix.$key.$suffix, $value, $chunk);
+            if ( strpos( $chunk , $prefix.$key.':') !== false ) {
+                $regex = '/'.preg_quote($prefix).$key.'\:(.+?)'.preg_quote($suffix).'/mi';
+                preg_match_all( $regex , $chunk, $matches );
+                foreach($matches[1] as $modifier){
+                    $modified = $this->modifiers->parse( $value, ':'.$modifier );
+                    $chunk = str_replace($prefix.$key.':'.$modifier.$suffix, $modified, $chunk);
+                }
+            } 
+            $chunk = str_replace($prefix.$key.$suffix, $value, $chunk);
 		}
-		
 		return $chunk;
 	}
 	
