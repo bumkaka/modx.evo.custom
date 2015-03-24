@@ -939,6 +939,7 @@ REPLACE INTO `{PREFIX}system_eventnames`
 ('17','OnManagerCreateGroup','2',''),
 ('18','OnBeforeCacheUpdate','4',''),
 ('19','OnCacheUpdate','4',''),
+('107','OnMakePageCacheKey','4',''),
 ('20','OnLoadWebPageCache','4',''),
 ('21','OnBeforeSaveWebPageCache','4',''),
 ('22','OnChunkFormPrerender','1','Chunks'),
@@ -953,6 +954,8 @@ REPLACE INTO `{PREFIX}system_eventnames`
 ('31','OnDocFormSave','1','Documents'),
 ('32','OnBeforeDocFormDelete','1','Documents'),
 ('33','OnDocFormDelete','1','Documents'),
+('1034','onBeforeMoveDocument','1','Documents'),
+('1035','onAfterMoveDocument','1','Documents'),
 ('34','OnPluginFormPrerender','1','Plugins'),
 ('35','OnPluginFormRender','1','Plugins'),
 ('36','OnBeforePluginFormSave','1','Plugins'),
@@ -1011,8 +1014,11 @@ REPLACE INTO `{PREFIX}system_eventnames`
 ('89','OnManagerPageInit','2',''),
 ('90','OnWebPageInit','5',''),
 ('101','OnLoadDocumentObject','5',''),
+('104','OnBeforeLoadDocumentObject','5',''),
+('105','OnAfterLoadDocumentObject','5',''),
 ('91','OnLoadWebDocument','5',''),
 ('92','OnParseDocument','5',''),
+('106','OnParseProperties','5',''),
 ('93','OnManagerLoginFormRender','2',''),
 ('94','OnWebPageComplete','5',''),
 ('95','OnLogPageHit','5',''),
@@ -1022,6 +1028,7 @@ REPLACE INTO `{PREFIX}system_eventnames`
 ('99','OnManagerLoginFormPrerender','2',''),
 ('100','OnStripAlias','1','Documents'),
 ('102','OnMakeDocUrl','5',''),
+('103','OnBeforeLoadExtension','5',''),
 ('200','OnCreateDocGroup','1','Documents'),
 ('201','OnManagerWelcomePrerender','2',''),
 ('202','OnManagerWelcomeHome','2',''),
@@ -1041,6 +1048,7 @@ REPLACE INTO `{PREFIX}system_eventnames`
 ('999','OnPageUnauthorized','1',''),
 ('1000','OnPageNotFound','1',''),
 ('1001','OnFileBrowserUpload','1','File Browser Events');
+
 
 # ^ I don't think we need more than 1000 built-in events. Custom events will start at 1001
 
