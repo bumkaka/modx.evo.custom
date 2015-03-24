@@ -329,7 +329,7 @@ function decode(s){
   <tr>
     <th><?php echo $_lang['tmplvars_type']; ?>:&nbsp;&nbsp;</th>
     <td><select name="type" size="1" class="inputBox" style="width:300px;" onchange="documentDirty=true;">
-	            <optgroup label="Standart Type">
+	            <optgroup label="Standard Type">
                     <option value="text" <?php      echo ($content['type']==''||$content['type']=='text')? "selected='selected'":""; ?>>Text</option>
                     <option value="rawtext" <?php       echo ($content['type']=='rawtext')? "selected='selected'":""; ?>>Raw Text (deprecated)</option>
                     <option value="textarea" <?php  echo ($content['type']=='textarea')? "selected='selected'":""; ?>>Textarea</option>
@@ -353,7 +353,7 @@ function decode(s){
                     <?php 
                         $custom_tvs = scandir(MODX_BASE_PATH.'assets/tvs'); 
                         foreach($custom_tvs as $ctv) {
-                            if(!in_array($ctv, array('.', '..', '.DS_Store'))){
+                            if(strpos($ctv, '.')!==0){
                                 $selected = ($content['type']=='custom_tv:'.$ctv )? "selected='selected'":"";
                                 echo '<option value="custom_tv:'.$ctv.'"  '.$selected.'>'.$ctv.'</option>';
                             }
