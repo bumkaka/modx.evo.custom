@@ -106,24 +106,24 @@ public function parse($output,$modifiers){
 				default:
 
 				$snippetName = 'modifier:'.$modifier_cmd[$i];
-				if( isset($this->snippetCache[$snippetName]) ) {
-					$snippet = $this->snippetCache[$snippetName];
+				if( isset($modx->snippetCache[$snippetName]) ) {
+					$snippet = $modx->snippetCache[$snippetName];
 				} else {
-					$prfx = $this->db->config['table_prefix'];
-					$sql= "SELECT snippet FROM {$prfx}site_snippets  WHERE {$prfx}site_snippets.name='" . $this->db->escape($snippetName) . "';";
-					$result= $this->db->query($sql);
-					if ($this->db->getRecordCount($result) == 1) {
-						$row= $this->db->fetchRow($result);
-						$snippet= $this->snippetCache[$row['name']]= $row['snippet'];
-					} else if ($this->db->getRecordCount($result) == 0){ // If snippet not found, look in the modifiers folder
-						$filename = $this->config['rb_base_dir'] . 'modifiers/'.$modifier_cmd[$i].'.modifier.php';
+					$prfx = $modx->db->config['table_prefix'];
+					$sql= "SELECT snippet FROM {$prfx}site_snippets  WHERE {$prfx}site_snippets.name='" . $modx->db->escape($snippetName) . "';";
+					$result= $modx->db->query($sql);
+					if ($modx->db->getRecordCount($result) == 1) {
+						$row= $modx->db->fetchRow($result);
+						$snippet= $modx->snippetCache[$row['name']]= $row['snippet'];
+					} else if ($modx->db->getRecordCount($result) == 0){ // If snippet not found, look in the modifiers folder
+						$filename = $modx->config['rb_base_dir'] . 'modifiers/'.$modifier_cmd[$i].'.modifier.php';
 						if (@file_exists($filename)) {
 							$file_contents = @file_get_contents($filename);
 							$file_contents = str_replace('<'.'?php', '', $file_contents);
 							$file_contents = str_replace('?'.'>', '', $file_contents);
 							$file_contents = str_replace('<?', '', $file_contents);
-							$snippet = $this->snippetCache[$snippetName] = $file_contents;
-							$this->snippetCache[$snippetName.'Props'] = '';
+							$snippet = $modx->snippetCache[$snippetName] = $file_contents;
+							$modx->snippetCache[$snippetName.'Props'] = '';
 						}
 					}
 				}
