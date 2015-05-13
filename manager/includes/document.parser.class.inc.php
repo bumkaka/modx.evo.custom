@@ -1020,7 +1020,7 @@ class DocumentParser {
 					unset($matches[0][$i]); // here we'll leave empty placeholders for last.
 				else {
                     $mods[0] = $value;
-                    $replace[$i] = $this->modifiers->parse($value,implode(':',$mods) );
+                    $replace[$i] = $this->modifiers->parse($value, $key, implode(':',$mods) );
                 }
 			}
 			$content = str_replace($matches[0], $replace, $content);
