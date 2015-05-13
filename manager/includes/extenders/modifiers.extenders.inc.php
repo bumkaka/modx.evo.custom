@@ -5,6 +5,7 @@ class modifiers{
 
 public function parse($output,$modifiers){
 	global $modx;
+    if ( !preg_match('/^\.*-*_*\w*\d*(:)/mi',$modifiers) ) return $output;
  	if (preg_match_all('~:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?~s',$modifiers, $matches)) {
 		$modifier_cmd = $matches[1]; // modifier command
 		$modifier_value = $matches[2]; // modifier value
@@ -12,6 +13,7 @@ public function parse($output,$modifiers){
 		$condition = array();
 		for($i=0; $i<$count; $i++) {
 			$output = trim($output);
+            $value = $modifier_value[$i];
 			switch ($modifier_cmd[$i]) {
 				
 				
