@@ -927,7 +927,7 @@ class DocumentParser {
 						$value = getTVDisplayFormat($value[0], $value[1], $value[2], $value[3], $value[4]);
 					}
                     $mods[0] = $value;
-					$replace[$i] = $this->modifiers->parse($value,implode(':',$mods) );
+					$replace[$i] = $this->modifiers->parse($value,$key, implode(':',$mods) );
 				}
 			}
 			$content = str_replace($matches[0], $replace, $content);
