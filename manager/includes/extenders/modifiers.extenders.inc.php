@@ -3,7 +3,7 @@
 if ( !class_exists('modifiers') ) {
 class modifiers{
 
-public function parse($output,$modifiers){
+public function parse($output, $key, $modifiers){
 	global $modx;
     if ( !preg_match('/^\.*-*_*\w*\d*(:)/mi',$modifiers) ) return $output;
  	if (preg_match_all('~:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?~s',$modifiers, $matches)) {
