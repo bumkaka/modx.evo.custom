@@ -1385,41 +1385,62 @@ class DocumentParser {
 				$isfolder[$val] = $this->aliasListing[$val]['isfolder'];
             }
 
-            if ($this->config['aliaslistingfolder'] == 1) {
-                preg_match_all('!\[\~([0-9]+)\~\]!ise', $documentSource, $match);
-                $ids = implode(',', array_unique($match['1']));
-                if ($ids) {
-                    $res = $this->db->select("id,alias,isfolder,parent", $this->getFullTableName('site_content'),  "id IN (".$ids.") AND isfolder = '0'");
-                    while( $row = $this->db->getRow( $res ) ) {
-                        if ($this->config['use_alias_path'] == '1') {
-                            $aliases[$row['id']] = $aliases[$row['parent']].'/'.$row['alias'];
-                        } else {
-                            $aliases[$row['id']] = $row['alias'];
-                        }
-                        $isfolder[$row['id']] = '0';
+            preg_match_all('!\[\~([a-zA-Z_-\s0-9]+)\~\]!ise', $documentSource, $match);
+            $tmp = array_unique($match['1']);
 
-                    }
+
+
+            foreach($tmp as $value){
+                if (is_numeric($value)){
+                    $ids[] = $value;
+                } else {
+                    $names[] = $value;
                 }
             }
 
-            $in= '!\[\~([0-9]+)\~\]!ise'; // Use preg_replace with /e to make it evaluate PHP
+            if (!empty($names)){
+                $res = $this->db->select("id,name,alias,isfolder,parent", $this->getFullTableName('site_content'), " name IN ('".implode("','", $names)."')");
+                while( $row = $this->db->getRow( $res ) ) {
+                    if (!empty($row['name'])) $NamesAliases[ $row['name'] ] = $row['id'];
+                }
+            }
+
+
+            if ($this->config['aliaslistingfolder'] == 1 && !empty($ids)) {
+                
+                $where[]  =  "id IN (".implode(',', $ids).")";
+                if (!empty($names)) $where[]  =  "name IN ('".implode("','", $names)."')";
+                $where = implode( ' OR ' , (array)$where );
+
+                $res = $this->db->select("id,alias,name,isfolder,parent", $this->getFullTableName('site_content'), "(".$where.")  AND isfolder = '0'");
+                while( $row = $this->db->getRow( $res ) ) {
+                    if ($this->config['use_alias_path'] == '1') {
+                        $aliases[$row['id']] = $aliases[$row['parent']].'/'.$row['alias'];
+                    } else {
+                        $aliases[$row['id']] = $row['alias'];
+                    }
+                    $isfolder[$row['id']] = '0';
+                }
+            }
+
             $isfriendly= ($this->config['friendly_alias_urls'] == 1 ? 1 : 0);
             $pref= $this->config['friendly_url_prefix'];
             $suff= $this->config['friendly_url_suffix'];
-            $thealias= '$aliases[\\1]';
-            $thefolder= '$isfolder[\\1]';
-            if ($this->config['seostrict']=='1'){
-			
-               $found_friendlyurl= "\$this->toAlias(\$this->makeFriendlyURL('$pref','$suff',$thealias,$thefolder,'\\1'))";
-            }else{
-               $found_friendlyurl= "\$this->makeFriendlyURL('$pref','$suff',$thealias,$thefolder,'\\1')";
+            foreach($tmp as $key){
+
+                $keyID = is_numeric($key)? $key : $NamesAliases[$key];
+
+                if ($this->config['seostrict']=='1'){
+                   $friendlyurl= $this->toAlias( $this->makeFriendlyURL($pref,$suff,$aliases[$keyID],$isfolder[$keyID],$key));
+                }else{
+                   $friendlyurl= $this->makeFriendlyURL($pref,$suff,$aliases[$keyID],$isfolder[$keyID],$key);
+                }
+
+                $documentSource = str_replace('[~'.$key.'~]', $friendlyurl, $documentSource);
             }
-            $not_found_friendlyurl= "\$this->makeFriendlyURL('$pref','$suff','" . '\\1' . "')";
-            $out= "({$isfriendly} && isset({$thealias}) ? {$found_friendlyurl} : {$not_found_friendlyurl})";
-            $documentSource= preg_replace($in, $out, $documentSource);
-			
+
         } else {
-            $in= '!\[\~([0-9]+)\~\]!is';
+            $in= '!\[\~([a-zA-Z_-\s0-9]+)\~\]!is';
             $out= "index.php?id=" . '\1';
             $documentSource= preg_replace($in, $out, $documentSource);
         }

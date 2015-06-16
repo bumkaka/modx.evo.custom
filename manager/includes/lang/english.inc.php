@@ -733,6 +733,7 @@ $_lang["resource_opt_menu_index_help"] = 'Menu Index is a field that can control
 $_lang["resource_opt_menu_title"] = 'Menu title';
 $_lang["resource_opt_menu_title_help"] = 'Menu title is an optional field used to display a short title in menu Snippet(s) or Modules.';
 $_lang["resource_opt_published"] = 'Published';
+$_lang["resource_opt_name"] = 'Name';
 $_lang["resource_opt_published_help"] = 'Check this field to have the Resource published immediately after saving it.';
 $_lang["resource_opt_richtext"] = 'Rich text';
 $_lang["resource_opt_richtext_help"] = 'Leave this checked to use the rich text editor for editing Resources. If your Resources contain JavaScript and forms, uncheck this to edit in HTML mode to prevent the editor from incorrectly changing your Resources.';

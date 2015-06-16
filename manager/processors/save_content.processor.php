@@ -6,6 +6,7 @@ if (!$modx->hasPermission('save_document')) {
 
 // preprocess POST values
 $id = is_numeric($_POST['id']) ? $_POST['id'] : '';
+$name = $modx->db->escape($_POST['name']);
 $introtext = $modx->db->escape($_POST['introtext']);
 $content = $modx->db->escape($_POST['ta']);
 $pagetitle = $modx->db->escape($_POST['pagetitle']);
@@ -318,6 +319,7 @@ switch ($actionToTake) {
 
 		$dbInsert = array
         (
+        	"name"			   => $name,
             "introtext"        => $introtext ,
             "content"          => $content ,
             "pagetitle"        => $pagetitle ,
@@ -508,7 +510,8 @@ switch ($actionToTake) {
 
 		// update the document
 		$modx->db->update(
-			"introtext='{$introtext}', "
+			 "name = '{$name}',"
+			."introtext='{$introtext}', "
 			. "content='{$content}', "
 			. "pagetitle='{$pagetitle}', "
 			. "longtitle='{$longtitle}', "

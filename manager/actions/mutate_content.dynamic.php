@@ -810,6 +810,14 @@ $page=isset($_REQUEST['page'])?(int)$_REQUEST['page']:'';
 
         <?php $mx_can_pub = $modx->hasPermission('publish_document') ? '' : 'disabled="disabled" '; ?>
             <tr style="height: 24px;">
+                <td width="150"><span class="warning"><?php echo $_lang['resource_opt_name']?></span></td>
+                <td>
+                    <input type="text" name="name" id="" value="<?php echo $content['name'];?>">
+                </td>
+            </tr>
+
+
+            <tr style="height: 24px;">
                 <td width="150"><span class="warning"><?php echo $_lang['resource_opt_published']?></span></td>
                 <td><input <?php echo $mx_can_pub ?>name="publishedcheck" type="checkbox" class="checkbox" <?php echo (isset($content['published']) && $content['published']==1) || (!isset($content['published']) && $publish_default==1) ? "checked" : ''?> onclick="changestate(document.mutate.published);" />
                 <input type="hidden" name="published" value="<?php echo (isset($content['published']) && $content['published']==1) || (!isset($content['published']) && $publish_default==1) ? 1 : 0?>" />
