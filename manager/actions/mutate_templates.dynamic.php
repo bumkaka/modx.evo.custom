@@ -141,6 +141,15 @@ function deletedocument() {
     <th><?php echo $_lang['new_category']; ?>:</th>
     <td><input name="newcategory" type="text" maxlength="45" value="<?php echo isset($content['newcategory']) ? $content['newcategory'] : '' ?>" class="inputBox" style="width:300px;" onchange="documentDirty=true;"></td>
     </tr>
+
+
+    <tr>
+        <th>Source file:</th>
+        <td><input name="source" type="text" maxlength="255" value="<?php echo $content['source']; ?>" class="inputBox" style="width:400px;" onchange="documentDirty=true;"></td>
+    </tr>
+
+
+
 <?php if($modx->hasPermission('save_role')):?>
     <tr>
     <td colspan="2"><label style="display:block;"><input name="locked" type="checkbox" <?php echo $content['locked']==1 ? "checked='checked'" : "" ;?> class="inputBox"> <?php echo $_lang['lock_template']; ?></label> <span class="comment"><?php echo $_lang['lock_template_msg']; ?></span></td>
@@ -153,7 +162,13 @@ function deletedocument() {
             <?php echo $_lang['template_code']; ?>
         </div>
         <div class="sectionBody">
-        <textarea dir="ltr" name="post" class="phptextarea" style="width:100%; height: 370px;" onChange="documentDirty=true;"><?php echo isset($content['post']) ? htmlspecialchars($content['post']) : htmlspecialchars($content['content']); ?></textarea>
+        <textarea 
+        dir="ltr" 
+        name="post" 
+        class="phptextarea" 
+        style="width:100%; height: 370px;" 
+        onChange="documentDirty=true;"
+        ><?php echo isset($content['post']) ? htmlspecialchars($content['post']) : ( empty($content['source']) ? htmlspecialchars( $content['content'])  : $modx->loadChunk( $content['source'] ) );  ?></textarea>
         </div>
     </div>
     <!-- HTML text editor end -->

@@ -7,6 +7,7 @@ if(!$modx->hasPermission('save_template')) {
 $id = intval($_POST['id']);
 $template = $modx->db->escape($_POST['post']);
 $templatename = $modx->db->escape(trim($_POST['templatename']));
+$source = $modx->db->escape(trim($_POST['source']));
 $description = $modx->db->escape($_POST['description']);
 $locked = $_POST['locked']=='on' ? 1 : 0 ;
 
@@ -42,7 +43,10 @@ switch ($_POST['mode']) {
 			$modx->manager->saveFormValues(19);
 			$modx->webAlertAndQuit(sprintf($_lang['duplicate_name_found_general'], $_lang['template'], $templatename), "index.php?a=19");
 		}
-
+		if (!empty($source) ) {
+			$modx->saveChunk( $source, $_POST['post']);
+			 $template = '';
+		} 
 		//do stuff to save the new doc
 		$newid = $modx->db->insert(
 			array(
@@ -51,6 +55,7 @@ switch ($_POST['mode']) {
 				'content' => $template,
 				'locked' => $locked,
 				'category' => $categoryid,
+				'source' => $source
 			), $modx->getFullTableName('site_templates'));
 
 			// invoke OnTempFormSave event
@@ -59,6 +64,8 @@ switch ($_POST['mode']) {
 										"mode"	=> "new",
 										"id"	=> $newid
 								));				
+		
+
 
 		// Set the item name for logger
 		$_SESSION['itemname'] = $templatename;
@@ -92,7 +99,10 @@ switch ($_POST['mode']) {
 			$modx->manager->saveFormValues(16);
 			$modx->webAlertAndQuit(sprintf($_lang['duplicate_name_found_general'], $_lang['template'], $templatename), "index.php?a=16&id={$id}");
 		}
-							
+		if (!empty($source) ) {
+			$modx->saveChunk( $source, $_POST['post']);
+			$template = '';
+		} 						
 		//do stuff to save the edited doc
 		$modx->db->update(
 			array(
@@ -101,6 +111,7 @@ switch ($_POST['mode']) {
 				'content'      => $template,
 				'locked'       => $locked,
 				'category'     => $categoryid,
+				'source' 	   => $source
 			), $modx->getFullTableName('site_templates'), "id='{$id}'");
 
 			// invoke OnTempFormSave event

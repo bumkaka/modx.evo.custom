@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_content` (
   `content_dispo` tinyint(1) NOT NULL default '0' COMMENT '0-inline, 1-attachment',
   `hidemenu` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Hide document from menu',
   `alias_visible` INT(2) NOT NULL DEFAULT '1',
+  `name` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `id` (`id`),
   KEY `parent` (`parent`),
@@ -167,6 +168,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_htmlsnippets` (
   `cache_type`	tinyint(1) NOT NULL default '0' COMMENT 'Cache option',
   `snippet` mediumtext,
   `locked` tinyint(4) NOT NULL default '0',
+  `source` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM COMMENT='Contains the site chunks.';
 
@@ -207,6 +209,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_modules` (
   `enable_sharedparams` tinyint NOT NULL DEFAULT '0',
   `properties` text,
   `modulecode` mediumtext COMMENT 'module boot up code',
+  `source` varchar(255) NOT NULL default '',
   PRIMARY KEY(`id`)
 ) ENGINE=MyISAM COMMENT='Site Modules';
 
@@ -237,6 +240,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_plugins` (
   `properties` text COMMENT 'Default Properties',  
   `disabled` tinyint NOT NULL DEFAULT '0' COMMENT 'Disables the plugin',
   `moduleguid` varchar(32) NOT NULL default '' COMMENT 'GUID of module from which to import shared parameters',
+  `source` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM COMMENT='Contains the site plugins.';
 
@@ -258,6 +262,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_snippets` (
   `locked` tinyint(4) NOT NULL default '0',
   `properties` text COMMENT 'Default Properties',  
   `moduleguid` varchar(32) NOT NULL default '' COMMENT 'GUID of module from which to import shared parameters',
+  `source` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM COMMENT='Contains the site snippets.';
 
@@ -271,6 +276,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_templates` (
   `template_type` integer NOT NULL DEFAULT '0' COMMENT '0-page,1-content',
   `content` mediumtext,
   `locked` tinyint(4) NOT NULL default '0',
+  `source` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM COMMENT='Contains the site templates.';
 

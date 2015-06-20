@@ -1864,13 +1864,8 @@ class DocumentParser {
             if (!$this->documentObject['template'])
                 $this->documentContent= "[*content*]"; // use blank template
             else {
-                $result= $this->db->select('content', $this->getFullTableName("site_templates"), "id = '{$this->documentObject['template']}'");
-                $rowCount= $this->db->getRecordCount($result);
-                if ($rowCount==1) {
-                     $this->documentContent = $this->db->getValue($result);
-                } else {
-                    $this->messageQuit("Incorrect number of templates returned from database");
-                }
+                $template = $this->getTemplate( $this->documentObject['template'] );
+                $this->documentContent = $template;
             }
 
             // invoke OnLoadWebDocument event
@@ -2735,6 +2730,30 @@ class DocumentParser {
         return $this->evalSnippet($snippet, $parameters);
     }
 
+
+    /**
+     * Returns the template content for the given name
+     * 
+     * @param string $templateName
+     * @return string
+     */
+    function getTemplate($Key) {
+        if ( is_numeric($Key) ){
+            $template = $this->db->getRow( $this->db->select('*', $this->getFullTableName("site_templates"), 'id = "'.$Key.'"' ) );
+        } else {
+            $template = $this->db->getRow( $this->db->select('*', $this->getFullTableName("site_templates"), 'templatename = "'.$Key.'"' ) );
+        }
+
+        if ( !empty($template['source']) ){
+            return $this->loadChunk( $template['source'] );
+        } else {
+            return $template['content'];
+        }
+        
+    }
+
+
+
     /**
      * Returns the chunk content for the given chunk name
      * 
@@ -2743,6 +2762,7 @@ class DocumentParser {
      */
 	function getChunk($chunkName) {
 		$out = null;
+       
 		if(empty($chunkName)) return $out;
 		if (isset ($this->chunkCache[$chunkName])) {
 			$out = $this->chunkCache[$chunkName];
@@ -2755,6 +2775,7 @@ class DocumentParser {
 				$out = $this->chunkCache[$chunkName]= $row['snippet'];
 			}
 		}
+        if ( strpos( $out, '@')==1) return $this->getTpl($out);
 		return $out;
 	}
 	
@@ -2845,6 +2866,28 @@ class DocumentParser {
                 }
         }
         return $template;
+    }
+
+
+    function saveChunk($file, $content){
+
+        if (!is_dir(dirname(MODX_BASE_PATH.$file))){
+            echo dirname(MODX_BASE_PATH.$file);
+            mkdir( dirname(MODX_BASE_PATH.$file) , $this->config['new_folder_permissions'], true);
+        }
+
+        $protect = "<?php if(!defined('MODX_BASE_PATH')) die('What are you doing? Get out of here!'); ?>";
+        file_put_contents( MODX_BASE_PATH.$file, $protect.$content);
+    }
+
+    function loadChunk( $file ){
+        $protect = "<?php if(!defined('MODX_BASE_PATH')) die('What are you doing? Get out of here!'); ?>";
+        return str_replace( $protect, '', @file_get_contents( MODX_BASE_PATH.$file) );
+    }
+
+
+    function loadTpl( $file ){
+        return '';
     }
  
     /**
