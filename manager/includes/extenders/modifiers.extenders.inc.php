@@ -7,17 +7,14 @@ public function parse($output, $key, $modifiers){
     global $modx;
     if ( !preg_match('/^\.*-*_*\w*\d*(:)/mi',$modifiers) ) return $output;
      if (preg_match_all('~:([^:=]+)(?:=`(.*?)`(?=:[^:=]+|$))?~s',$modifiers, $matches)) {
-        $modifier_cmd = $matches[1]; // modifier command
-        $modifier_value = $matches[2]; // modifier value
-        $count = count($modifier_cmd);
+        $count = count($matches[1]);
         $condition = array();
         for($i=0; $i<$count; $i++) {
             $output = trim($output);
-            $value = $modifier_value[$i];
-            switch ($modifier_cmd[$i]) {
-                
-                
-                
+            $modifier_cmd = $matches[1][$i]; // modifier command
+            $modifier_value = $matches[2][$i]; // modifier value
+            $value = $modifier_value;
+            switch ($modifier_cmd) {
                 case "lcase": 
                 case "strtolower": 
                     $output = strtolower($output); 
@@ -64,12 +61,12 @@ public function parse($output, $key, $modifiers){
                 break;
 
                 case "wordwrap": 
-                    $wrapat = intval($modifier_value[$i]) ? intval($modifier_value[$i]) : 70;
+                    $wrapat = intval($modifier_value) ? intval($modifier_value) : 70;
                     $output = preg_replace("~(\b\w+\b)~e","wordwrap('\\1',\$wrapat,' ',1)",$output);
                 break;
 
                 case "limit": 
-                    $limit = intval($modifier_value[$i]) ? intval($modifier_value[$i]) : 100;
+                    $limit = intval($modifier_value) ? intval($modifier_value) : 100;
                     $output = substr($output,0,$limit);
                 break;
 
@@ -90,24 +87,24 @@ public function parse($output, $key, $modifiers){
                 case "trim":
                 case "nl2br":                    
                 case "md5": 
-                    $output = $modifier_cmd[$i]($output); 
+                    $output = $modifier_cmd($output); 
                 break;
 
 
                 case "math":
-                    $filter = preg_replace("~([a-zA-Z\n\r\t\s])~","",$modifier_value[$i]);
+                    $filter = preg_replace("~([a-zA-Z\n\r\t\s])~","",$modifier_value);
                     $filter = str_replace("?",$output,$filter);
                     $output = eval("return ".$filter.";");
                 break;    
 
                 case "date": 
-                    $output = strftime($modifier_value[$i],0+$output); 
+                    $output = strftime($modifier_value,0+$output); 
                 break;
 
 
                 default:
 
-                $snippetName = 'modifier:'.$modifier_cmd[$i];
+                $snippetName = 'modifier:'.$modifier_cmd;
                 if( isset($modx->snippetCache[$snippetName]) ) {
                     $snippet = $modx->snippetCache[$snippetName];
                 } else {
@@ -118,7 +115,7 @@ public function parse($output, $key, $modifiers){
                         $row= $modx->db->fetchRow($result);
                         $snippet= $modx->snippetCache[$row['name']]= $row['snippet'];
                     } else if ($modx->db->getRecordCount($result) == 0){ // If snippet not found, look in the modifiers folder
-                        $filename = $modx->config['rb_base_dir'] . 'modifiers/'.$modifier_cmd[$i].'.modifier.php';
+                        $filename = $modx->config['rb_base_dir'] . 'modifiers/'.$modifier_cmd.'.modifier.php';
                         if (@file_exists($filename)) {
                             $file_contents = @file_get_contents($filename);
                             $file_contents = str_replace('<'.'?php', '', $file_contents);
@@ -133,7 +130,7 @@ public function parse($output, $key, $modifiers){
                 // end //
                 
                 ob_start();
-                $options = $modifier_value[$i];
+                $options = $modifier_value;
                 $custom = eval($cm);
                 $msg = ob_get_contents();
                 $output = $msg.$custom;
