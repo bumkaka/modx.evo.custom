@@ -104,8 +104,8 @@ public function parse($output, $key, $modifiers){
                     $snippet = $modx->snippetCache[$snippetName];
                 } else {
                     $prfx = $modx->db->config['table_prefix'];
-                    $sql= "SELECT snippet FROM {$prfx}site_snippets  WHERE {$prfx}site_snippets.name='" . $modx->db->escape($snippetName) . "';";
-                    $result= $modx->db->query($sql);
+                    $esc_name = $modx->db->escape($snippetName);
+                    $result= $modx->db->select('snippet',"{$prfx}site_snippets","name='{$esc_name}'");
                     if ($modx->db->getRecordCount($result) == 1) {
                         $row= $modx->db->fetchRow($result);
                         $snippet= $modx->snippetCache[$row['name']]= $row['snippet'];
