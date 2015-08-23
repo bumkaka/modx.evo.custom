@@ -110,7 +110,7 @@ public function parse($output, $key, $modifiers){
                         $row= $modx->db->getRow($result);
                         $snippet= $modx->snippetCache[$row['name']]= $row['snippet'];
                     } else if ($modx->db->getRecordCount($result) == 0){ // If snippet not found, look in the modifiers folder
-                        $filename = $modx->config['rb_base_dir'] . 'modifiers/'.$modifier_cmd.'.modifier.php';
+                        $filename = $modx->config['base_path'] . 'assets/modifiers/'.$modifier_cmd.'.modifier.php';
                         if (@is_file($filename)) {
                             $file_contents = @file_get_contents($filename);
                             $file_contents = str_replace('<'.'?php', '', $file_contents);
