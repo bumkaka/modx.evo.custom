@@ -107,7 +107,7 @@ public function parse($output, $key, $modifiers){
                     $esc_name = $modx->db->escape($snippetName);
                     $result= $modx->db->select('snippet',"{$prfx}site_snippets","name='{$esc_name}'");
                     if ($modx->db->getRecordCount($result) == 1) {
-                        $row= $modx->db->fetchRow($result);
+                        $row= $modx->db->getRow($result);
                         $snippet= $modx->snippetCache[$row['name']]= $row['snippet'];
                     } else if ($modx->db->getRecordCount($result) == 0){ // If snippet not found, look in the modifiers folder
                         $filename = $modx->config['rb_base_dir'] . 'modifiers/'.$modifier_cmd.'.modifier.php';
