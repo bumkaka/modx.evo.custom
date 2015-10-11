@@ -44,7 +44,7 @@ switch ($_POST['mode']) {
 			$modx->webAlertAndQuit(sprintf($_lang['duplicate_name_found_general'], $_lang['template'], $templatename), "index.php?a=19");
 		}
 		if (!empty($source) ) {
-			$modx->saveChunk( $source, $_POST['post']);
+			$modx->saveChunk( $modx->config['dev_template_path'].$source, $_POST['post']);
 			 $template = '';
 		} 
 		//do stuff to save the new doc
@@ -100,7 +100,7 @@ switch ($_POST['mode']) {
 			$modx->webAlertAndQuit(sprintf($_lang['duplicate_name_found_general'], $_lang['template'], $templatename), "index.php?a=16&id={$id}");
 		}
 		if (!empty($source) ) {
-			$modx->saveChunk( $source, $_POST['post']);
+			$modx->saveSource( $modx->config['dev_template_path'].$source, $_POST['post']);
 			$template = '';
 		} 						
 		//do stuff to save the edited doc

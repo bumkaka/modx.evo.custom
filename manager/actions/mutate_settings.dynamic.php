@@ -1761,6 +1761,45 @@ function confirmLangChange(el, lkey, elupd){
           </tr>
         </table>
       </div>
+
+
+       <!-- Friendly URL settings  -->
+      <div class="tab-page" id="tabPageDev">
+        <h2 class="tab">Develop</h2>
+        <script type="text/javascript">tpSettings.addTabPage( document.getElementById( "tabPageDev" ) );</script>
+        <table border="0" cellspacing="0" cellpadding="3">
+
+
+          <tr id="rbRow37" style="display: <?php echo $use_browser==1 ? $displayStyle : 'none' ; ?>">
+            <td nowrap class="warning">Source template path</td>
+            <td>
+              <input onchange="documentDirty=true;" type='text' style="width: 300px;" name="dev_template_path" value="<?php echo isset($settings['dev_template_path']) ? $settings['dev_template_path'] : "assets/resource/template/" ; ?>" />
+            </td>
+          </tr>
+
+          <tr id="rbRow37" style="display: <?php echo $use_browser==1 ? $displayStyle : 'none' ; ?>">
+            <td nowrap class="warning">Source chunk path</td>
+            <td>
+              <input onchange="documentDirty=true;" type='text' style="width: 300px;" name="dev_chunk_path" value="<?php echo isset($settings['dev_chunk_path']) ? $settings['dev_chunk_path'] : "assets/resource/chunks/" ; ?>" />
+            </td>
+          </tr>
+
+          <tr id="rbRow37" style="display: <?php echo $use_browser==1 ? $displayStyle : 'none' ; ?>">
+            <td nowrap class="warning">Source snippet path</td>
+            <td>
+              <input onchange="documentDirty=true;" type='text' style="width: 300px;" name="dev_snippet_path" value="<?php echo isset($settings['dev_snippet_path']) ? $settings['dev_snippet_path'] : "assets/resource/snippet/" ; ?>" />
+            </td>
+          </tr>
+
+          <tr id="rbRow37" style="display: <?php echo $use_browser==1 ? $displayStyle : 'none' ; ?>">
+            <td nowrap class="warning">Source plugin path</td>
+            <td>
+              <input onchange="documentDirty=true;" type='text' style="width: 300px;" name="dev_plugin_path" value="<?php echo isset($settings['dev_plugin_path']) ? $settings['dev_plugin_path'] : "assets/resource/plugin/" ; ?>" />
+            </td>
+          </tr>
+
+        </table>
+      </div>
     </div>
 </div>
 </form>

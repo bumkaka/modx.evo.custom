@@ -105,6 +105,12 @@ if (isset($data) && count($data) > 0) {
 				}
 				$k = '';
 				break;
+			case 'dev_template_path':
+			case 'dev_chunk_path':
+			case 'dev_snippet_path':
+			case 'dev_plugin_path':
+				$v = str_replace( '//','/', $v.'/' );
+			break;
 			default:
 			break;
 		}

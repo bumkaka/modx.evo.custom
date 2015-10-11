@@ -9,6 +9,7 @@ $snippet = trim($modx->db->escape($_POST['post']));
 $name = $modx->db->escape(trim($_POST['name']));
 $description = $modx->db->escape($_POST['description']);
 $locked = $_POST['locked']=='on' ? 1 : 0 ;
+$source = $modx->db->escape(trim($_POST['source']));
 
 //Kyle Jaebker - added category support
 if (empty($_POST['newcategory']) && $_POST['categoryid'] > 0) {
@@ -43,6 +44,11 @@ switch ($_POST['mode']) {
 			$modx->webAlertAndQuit(sprintf($_lang['duplicate_name_found_general'], $_lang['chunk'], $name), "index.php?a=77");
 		}
 
+		if (!empty($source) ) {
+			$modx->saveSource( $modx->config['dev_chunk_path'].$source, $_POST['post']);
+			$snippet = '';
+		} 
+
 		//do stuff to save the new doc
 		$newid = $modx->db->insert(
 			array(
@@ -51,6 +57,7 @@ switch ($_POST['mode']) {
 				'snippet' => $snippet,
 				'locked' => $locked,
 				'category' => $categoryid,
+				'source' 	   => $source
 			), $modx->getFullTableName('site_htmlsnippets'));
 
 			// invoke OnChunkFormSave event
@@ -90,7 +97,10 @@ switch ($_POST['mode']) {
 			$modx->manager->saveFormValues(78);
 			$modx->webAlertAndQuit(sprintf($_lang['duplicate_name_found_general'], $_lang['chunk'], $name), "index.php?a=78&id={$id}");
 		}
-
+		if (!empty($source) ) {
+			$modx->saveSource( $modx->config['dev_chunk_path'].$source, $_POST['post']);
+			$snippet = '';
+		} 
 		//do stuff to save the edited doc
 		$modx->db->update(
 			array(
@@ -99,6 +109,7 @@ switch ($_POST['mode']) {
 				'snippet'     => $snippet,
 				'locked'      => $locked,
 				'category'    => $categoryid,
+				'source' 	   => $source
 			), $modx->getFullTableName('site_htmlsnippets'), "id='{$id}'");
 
 			// invoke OnChunkFormSave event

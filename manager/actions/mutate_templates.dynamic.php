@@ -144,8 +144,8 @@ function deletedocument() {
 
 
     <tr>
-        <th>Source file:</th>
-        <td><input name="source" type="text" maxlength="255" value="<?php echo $content['source']; ?>" class="inputBox" style="width:400px;" onchange="documentDirty=true;"></td>
+        <th >Source file:</th>
+        <td style="vertical-align:middle"><?php echo $modx->config['dev_template_path'];?><input name="source" type="text" maxlength="255" value="<?php echo $content['source']; ?>" class="inputBox" style="width:141px;" onchange="documentDirty=true;"></td>
     </tr>
 
 
@@ -168,7 +168,7 @@ function deletedocument() {
         class="phptextarea" 
         style="width:100%; height: 370px;" 
         onChange="documentDirty=true;"
-        ><?php echo isset($content['post']) ? htmlspecialchars($content['post']) : ( empty($content['source']) ? htmlspecialchars( $content['content'])  : $modx->loadChunk( $content['source'] ) );  ?></textarea>
+        ><?php echo isset($content['post']) ? htmlspecialchars($content['post']) : ( empty($content['source']) ? htmlspecialchars( $content['content'])  : $modx->loadSource( $modx->config['dev_template_path'].$content['source'] ) );  ?></textarea>
         </div>
     </div>
     <!-- HTML text editor end -->

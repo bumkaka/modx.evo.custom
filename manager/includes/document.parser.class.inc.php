@@ -163,8 +163,7 @@ class DocumentParser {
      * @return float
      */
     function getMicroTime() {
-        list ($usec, $sec)= explode(' ', microtime());
-        return ((float) $usec + (float) $sec);
+        return microtime(true);
     }
 
     /**
@@ -739,7 +738,7 @@ class DocumentParser {
     function getTimerStats($tstart) {
         $stats = array();
 
-        $stats['totalTime'] = ($this->getMicroTime() - $tstart);
+        $stats['totalTime'] = $this->getMicroTime() - $tstart;
         $stats['queryTime'] = $this->queryTime;
         $stats['phpTime'] = $stats['totalTime'] - $stats['queryTime'];
 
@@ -832,76 +831,53 @@ class DocumentParser {
     }
 
     function getTagsFromContent($content,$left='[+',$right='+]') {
-        $_ = $this->_getTagsFromContent($content,$left,$right);
-        if(empty($_)) return array();
-        foreach($_ as $v)
-        {
-            $tags[0][] = "{$left}{$v}{$right}";
-            $tags[1][] = $v;
+        $hash = explode($left,$content);
+        foreach($hash as $i=>$v) {
+          if(0<$i) $hash[$i] = $left.$v;
         }
-        return $tags;
-    }
-    
-    function _getTagsFromContent($content, $left='[+',$right='+]') {
-        if(strpos($content,$left)===false) return array();
-        $spacer = md5('<<<MODX>>>');
-        if(strpos($content,'<[!')!==false)  $content = str_replace('<[!', "<[{$spacer}!",$content);
-        if(strpos($content,']]>')!==false)  $content = str_replace(']]>', "]{$spacer}]>",$content);
-        if(strpos($content,'!]>')!==false)  $content = str_replace('!]>', "!{$spacer}]>",$content);
-        if(strpos($content,';}}')!==false)  $content = str_replace(';}}', ";}{$spacer}}",$content);
-        if(strpos($content,'{{}}')!==false) $content = str_replace('{{}}',"{{$spacer}{}{$spacer}}",$content);
         
-        $lp = explode($left,$content);
-        $piece = array();
-        foreach($lp as $lc=>$lv) {
-            if($lc!==0) $piece[] = $left;
-            if(strpos($lv,$right)===false) $piece[] = $lv;
-            else {
-                $rp = explode($right,$lv);
-                foreach($rp as $rc=>$rv) {
-                    if($rc!==0) $piece[] = $right;
-                    $piece[] = $rv;
+        $i=0;
+        $count = count($hash);
+        $safecount = 0;
+        $temp_hash = array();
+        while(0<$count) {
+            $open  = 1;
+            $close = 0;
+            $safecount++;
+            if(1000<$safecount) break;
+            while($close < $open && 0 < $count) {
+                $safecount++;
+                if(!isset($temp_hash[$i])) $temp_hash[$i] = '';
+                if(1000<$safecount) break;
+                $remain = array_shift($hash);
+                $remain = explode($right,$remain);
+                foreach($remain as $v)
+            	{
+            		if($close < $open)
+                	{
+                		$close++;
+                		$temp_hash[$i] .= $v . $right;
+            		}
+            		else break;
                 }
+                $count = count($hash);
+                if(0<$i && strpos($temp_hash[$i],$right)===false) $open++;
+            }
+            $i++;
+        }
+        $matches=array();
+        $i = 0;
+        foreach($temp_hash as $v) {
+            if(strpos($v,$left)!==false) {
+                $v = substr($v,0,strrpos($v,$right));
+                $matches[0][$i] = $v . $right;
+                $matches[1][$i] = substr($v,strlen($left));
+                $i++;
             }
         }
-        $lc=0;
-        $rc=0;
-        $fetch = '';
-        foreach($piece as $v) {
-            if($v===$left) {
-                if(0<$lc) $fetch .= $left;
-                $lc++;
-            }
-            elseif($v===$right) {
-                if($lc===0) continue;
-                $rc++;
-                if($lc===$rc) {
-                    $tags[] = $fetch; // Fetch and reset
-                    $fetch = '';
-                    $lc=0;
-                    $rc=0;
-                }
-                else $fetch .= $right;
-            } else {
-                if(0<$lc) $fetch .= $v;
-                else continue;
-            }
-        }
-        if(!$tags) return array();
-        
-        foreach($tags as $tag) {
-            if(strpos($tag,$left)!==false) {
-                $innerTags = $this->_getTagsFromContent($tag,$left,$right);
-                $tags = array_merge($innerTags,$tags);
-            }
-        }
-        
-        foreach($tags as $i=>$tag) {
-            if(strpos($tag,"$spacer")!==false) $tags[$i] = str_replace("$spacer", '', $tag);
-        }
-        return $tags;
+        return $matches;
     }
-    
+
     /**
      * Merge content fields and TVs
      *
@@ -913,8 +889,7 @@ class DocumentParser {
 			return $content;
 		$replace = array();
 		$matches = $this->getTagsFromContent($content, '[*', '*]');
-        
-        if ($matches) {
+		if ($matches) {
 			for ($i = 0; $i < count($matches[1]); $i++) {
 				if ($matches[1][$i]) {
                     $mods = array();
@@ -970,27 +945,21 @@ class DocumentParser {
      * @return string
      */
     function mergeChunkContent($content) {
-		if (strpos($content, '{{') === false)
-			return $content;
+		if (strpos($content, '{{') === false) return $content;
 		$replace = array();
 		$matches = $this->getTagsFromContent($content, '{{', '}}');
+
 		if ($matches) {
-			for ($i = 0; $i < count($matches[1]); $i++) {
-				if ($matches[1][$i]) {
-					if (isset($this->chunkCache[$matches[1][$i]])) {
-						$replace[$i] = $this->chunkCache[$matches[1][$i]];
-					} else {
-						$result = $this->db->select('snippet', $this->getFullTableName('site_htmlsnippets'), "name='".$this->db->escape($matches[1][$i])."'");
-						if ($snippet = $this->db->getValue($result)) {
-							$this->chunkCache[$matches[1][$i]] = $snippet;
-							$replace[$i] = $snippet;
-						} else {
-							$this->chunkCache[$matches[1][$i]] = '';
-							$replace[$i] = '';
-						}
-					}
-				}
-			}
+
+            foreach($matches[1] as $key=>$chunkName){
+
+                if ( $chunkName ) {
+                    $chunk = isset($this->chunkCache[ $chunkName ]) ? $this->chunkCache[ $chunkName ] : $this->getTpl( $chunkName );
+                    $this->chunkCache[ $chunkName ] = $chunk;
+                    $replace[ $key ] = $chunk;
+                }
+            }
+
 			$content = str_replace($matches[0], $replace, $content);
 			$content = $this->mergeSettingsContent($content);
 		}
@@ -2745,7 +2714,7 @@ class DocumentParser {
         }
 
         if ( !empty($template['source']) ){
-            return $this->loadChunk( $template['source'] );
+            return $this->loadSource( $this->config['dev_template_path'].$template['source'] );
         } else {
             return $template['content'];
         }
@@ -2764,18 +2733,26 @@ class DocumentParser {
 		$out = null;
        
 		if(empty($chunkName)) return $out;
+
 		if (isset ($this->chunkCache[$chunkName])) {
 			$out = $this->chunkCache[$chunkName];
 		} else {
-			$sql= "SELECT `snippet` FROM " . $this->getFullTableName("site_htmlsnippets") . " WHERE " . $this->getFullTableName("site_htmlsnippets") . ".`name`='" . $this->db->escape($chunkName) . "';";
-			$result= $this->db->query($sql);
-			$limit= $this->db->getRecordCount($result);
-			if ($limit == 1) {
-				$row= $this->db->getRow($result);
-				$out = $this->chunkCache[$chunkName]= $row['snippet'];
-			}
+            if ( strpos( $chunkName, '@') !== false ) {
+                $out =  $this->getTpl($chunkName);
+            } else {
+                $chunk = $this->db->getRow( $this->db->select('*', $this->getFullTableName("site_htmlsnippets") , 'name = "'.$this->db->escape($chunkName).'"') );
+            
+                if ( !empty($chunk['source']) ){
+                    return  $this->loadSource( $this->config['dev_chunk_path'].$chunk['source'] );
+                } else {
+                    $out = $chunk['snippet'];
+                }
+            }
+            
+            $this->chunkCache[$chunkName] = $out;
 		}
-        if ( strpos( $out, '@')==1) return $this->getTpl($out);
+
+        
 		return $out;
 	}
 	
@@ -2840,6 +2817,24 @@ class DocumentParser {
      */
     function getTpl($tpl){
         $template = $tpl;
+        // @users.row  - Load chunk from [MODX_BASE_PATH] . [dev.chunk.path] . users.row . php
+        
+        if ( strpos($tpl,'@') === 0 && strpos($tpl,':') === false ){
+            $path = str_replace('@','',$tpl);
+            $path = str_replace('.','/',$path);
+
+
+            if ( is_file( MODX_BASE_PATH.$this->config['dev_chunk_path'].$path.'.php' )  ) {
+                return $this->loadSource( $this->config['dev_chunk_path'].$path );
+            }
+            if ( is_file( MODX_BASE_PATH.$path.'php' ) ) {
+                return $this->loadSource( $path);
+            }
+        }
+
+
+
+
         if (preg_match("~^@([^:\s]+)[:\s]+(.+)$~", $tpl, $match)) {
             $command = strtoupper($match[1]);
             $template = $match[2];
@@ -2869,8 +2864,8 @@ class DocumentParser {
     }
 
 
-    function saveChunk($file, $content){
-
+    function saveSource($file, $content){
+        $file = rtrim( $file, '.php').'.php';
         if (!is_dir(dirname(MODX_BASE_PATH.$file))){
             echo dirname(MODX_BASE_PATH.$file);
             mkdir( dirname(MODX_BASE_PATH.$file) , $this->config['new_folder_permissions'], true);
@@ -2880,15 +2875,13 @@ class DocumentParser {
         file_put_contents( MODX_BASE_PATH.$file, $protect.$content);
     }
 
-    function loadChunk( $file ){
+    function loadSource( $file ){
         $protect = "<?php if(!defined('MODX_BASE_PATH')) die('What are you doing? Get out of here!'); ?>";
+        $file = rtrim( $file, '.php').'.php';
         return str_replace( $protect, '', @file_get_contents( MODX_BASE_PATH.$file) );
     }
 
 
-    function loadTpl( $file ){
-        return '';
-    }
  
     /**
      * Returns the timestamp in the date format defined in $this->config['datetime_format']

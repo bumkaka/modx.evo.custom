@@ -206,9 +206,9 @@ if(!class_exists('synccache')) {
         // WRITE Chunks to cache file
         $rs = $modx->db->select('*', $modx->getFullTableName('site_htmlsnippets'));
         $tmpPHP .= '$c = &$this->chunkCache;';
-        while ($tmp1 = $modx->db->getRow($rs)) {
-				/** without trim */
-            $tmpPHP .= '$c[\'' . $this->escapeSingleQuotes($tmp1['name']) . '\']' . " = '" . $this->escapeSingleQuotes($tmp1['snippet']) . "';";
+        while ($tmp1 = $modx->db->getRow($rs)) {	
+			$chunk = $modx->getTpl( $tmp1['name'] );
+            $tmpPHP .= '$c[\'' . $this->escapeSingleQuotes($tmp1['name']) . '\']' . " = '" . $this->escapeSingleQuotes( $chunk ) . "';";
         }
 
         // WRITE snippets to cache file

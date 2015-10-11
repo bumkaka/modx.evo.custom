@@ -168,6 +168,12 @@ foreach (getCategories() as $n => $v) {
         <span class="comment"><?php echo $_lang['lock_htmlsnippet_msg']?></span></td>
     </tr>
 <?php endif;?>
+
+    <tr>
+        <th>Source file:</th>
+        <td style="vertical-align:middle" ><?php echo $modx->config['dev_chunk_path'];?><input name="source" type="text" maxlength="255" value="<?php echo $content['source']; ?>" class="inputBox" style="width:141px;" onchange="documentDirty=true;"></td>
+    </tr>
+
     </table>
 
     <div class="section">
@@ -175,7 +181,9 @@ foreach (getCategories() as $n => $v) {
             <?php echo $_lang['chunk_code']?>
         </div>
         <div class="sectionBody">
-        <textarea dir="ltr" class="phptextarea" name="post" style="width:100%; height:370px;" onChange="documentDirty=true;"><?php echo isset($content['post']) ? htmlspecialchars($content['post']) : htmlspecialchars($content['snippet'])?></textarea>
+        <textarea dir="ltr" class="phptextarea" name="post" style="width:100%; height:370px;" onChange="documentDirty=true;"><?php 
+        echo isset($content['post']) ? htmlspecialchars($content['post']) : ( empty($content['source']) ? htmlspecialchars( $content['snippet'])  : $modx->loadSource( $modx->config['dev_chunk_path'].$content['source'] ) );  
+        ?></textarea>
         </div>
     </div>
 
