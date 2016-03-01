@@ -70,7 +70,7 @@ class DocumentParser {
      *
      * @return DocumentParser
      */
-    function DocumentParser() {
+    function __construct() {
         global $database_server;
         if(substr(PHP_OS,0,3) === 'WIN' && $database_server==='localhost') $database_server = '127.0.0.1';
 
@@ -887,32 +887,66 @@ class DocumentParser {
     function mergeDocumentContent($content) {
         if (strpos($content, '[*') === false)
 			return $content;
-		$replace = array();
+        if(!isset($this->documentIdentifier)) return $content;
+        if(!isset($this->documentObject) || empty($this->documentObject)) return $content;
+        
 		$matches = $this->getTagsFromContent($content, '[*', '*]');
-		if ($matches) {
-			for ($i = 0; $i < count($matches[1]); $i++) {
-				if ($matches[1][$i]) {
-                    $mods = array();
-					$key = $matches[1][$i];
-					$key = substr($key, 0, 1) == '#' ? substr($key, 1) : $key; // remove # for QuickEdit format
 
-                    if ( strpos($key , ':') !== false ){
-                        $mods = explode(':',$key);
-                        $key = $mods[0];
-                    }
-
-					$value = $this->documentObject[$key];
-					if (is_array($value)) {
-						include_once MODX_MANAGER_PATH . 'includes/tmplvars.format.inc.php';
-						include_once MODX_MANAGER_PATH . 'includes/tmplvars.commands.inc.php';
-						$value = getTVDisplayFormat($value[0], $value[1], $value[2], $value[3], $value[4]);
+        if(!$matches) return $content;
+        
+        foreach($matches[1] as $i=>$key) {
+            if(substr($key, 0, 1) == '#') $key = substr($key, 1); // remove # for QuickEdit format
+            if(strpos($key,'@')!==false) {
+                list($key,$str) = explode('@',$key,2);
+                $context = strtolower($str);
+                if(substr($str,0,5)==='alias' && strpos($str,'(')!==false)
+                    $context = 'alias';
+                elseif(substr($str,0,1)==='u' && strpos($str,'(')!==false)
+                    $context = 'uparent';
+                switch($context) {
+                    case 'site_start':
+                        $docid = $this->config['site_start'];
+                        break;
+                    case 'parent':
+                    case 'p':
+                        $docid = $this->documentObject['parent'];
+                        if($docid==0) $docid = $this->config['site_start'];
+                        break;
+                    case 'ultimateparent':
+                    case 'uparent':
+                    case 'up':
+                    case 'u':
+                        if(strpos($str,'(')!==false) {
+                            $top = substr($str,strpos($str,'('));
+                            $top = trim($top,'()"\'');
 					}
-                    $mods[0] = $value;
-					$replace[$i] = $this->modifiers->parse($value,$key, implode(':',$mods) );
+                        else $top = 0;
+                        $docid = $this->getUltimateParentId($this->documentIdentifier,$top);
+                        break;
+                    case 'alias':
+                        $str = substr($str,strpos($str,'('));
+                        $str = trim($str,'()"\'');
+                        $docid = $this->getIdFromAlias($str);
+                        break;
+                    default:
+                        $docid = $str;
+                }
+                if(preg_match('@^[1-9][0-9]*$@',$docid))
+                    $value = $this->getField($key,$docid);
+                else $value = '';
+
 				}
+            elseif(!isset($this->documentObject[$key])) $value = '';
+            else $value= $this->documentObject[$key];
+            
+            if (is_array($value)) {
+                include_once(MODX_MANAGER_PATH . 'includes/tmplvars.format.inc.php');
+                include_once(MODX_MANAGER_PATH . 'includes/tmplvars.commands.inc.php');
+                $value = getTVDisplayFormat($value[0], $value[1], $value[2], $value[3], $value[4]);
 			}
-			$content = str_replace($matches[0], $replace, $content);
+            $content= str_replace($matches['0'][$i], $value, $content);
 		}
+        
 		return $content;
 	}
 
@@ -926,16 +960,18 @@ class DocumentParser {
         if (strpos($content, '[(') === false)
             return $content;
         $replace= array ();
-        $matches= array ();
-        if (preg_match_all('~\[\(([a-zA-Z0-9\_]*?)\)\]~', $content, $matches)) {
-            $settingsCount= count($matches[1]);
-            for ($i= 0; $i < $settingsCount; $i++) {
-                if (array_key_exists($matches[1][$i], $this->config)){
-                   $content= str_replace($matches[0][$i], $this->config[$matches[1][$i]], $content);
-               }
-           }
-       }
-       return $content; 
+        $matches = $this->getTagsFromContent($content, '[(', ')]');
+        if ($matches) {
+            for ($i = 0; $i < count($matches[1]); $i++) {
+                if ($matches[1][$i] && array_key_exists($matches[1][$i], $this->config)){
+                    //$replace[$i] = $this->config[$matches[1][$i]];
+                    $content = str_replace($matches[0][$i], $this->config[$matches[1][$i]], $content);
+                }
+            }
+
+            
+        }
+        return $content;
     }
 
 	/**
@@ -1104,12 +1140,21 @@ class DocumentParser {
         $matches = $this->getTagsFromContent($content,'[[',']]');
         
         if(!$matches) return $content;
-        $i= 0;
         $replace= array ();
-        foreach($matches['1'] as $value)
+		foreach($matches[1] as $i=>$value)
+		{
+			$find = $i - 1;
+			while( $find >= 0 )
+			{
+				$tag = $matches[0][ $find ];
+				if(isset($replace[$find]) && strpos($value,$tag)!==false)
         {
+					$value = str_replace($tag,$replace[$find],$value);
+					break;
+				}
+				$find--;
+			}
             $replace[$i] = $this->_get_snip_result($value);
-            $i++;
         }
         $content = str_replace($matches['0'], $replace, $content);
         return $content;
@@ -1349,9 +1394,11 @@ class DocumentParser {
                 $aliases[$item['id']]= (strlen($item['path']) > 0 ? $item['path'] . '/' : '') . $item['alias'];
                 $isfolder[$item['id']]= $item['isfolder'];
             } */
-			foreach($this->documentListing as $key=>$val){
-				$aliases[$val] = $key;
-				$isfolder[$val] = $this->aliasListing[$val]['isfolder'];
+            if (is_array($this->documentListing)){
+                foreach($this->documentListing as $key=>$val){
+                    $aliases[$val] = $key;
+                    $isfolder[$val] = $this->aliasListing[$val]['isfolder'];
+                }
             }
 
             preg_match_all('!\[\~([a-zA-Z_-\s0-9]+)\~\]!ise', $documentSource, $match);
@@ -1387,33 +1434,36 @@ class DocumentParser {
                         $aliases[$row['id']] = $aliases[$row['parent']].'/'.$row['alias'];
                     } else {
                         $aliases[$row['id']] = $row['alias'];
+
                     }
                     $isfolder[$row['id']] = '0';
                 }
             }
 
+            $in= '!\[\~([0-9]+)\~\]!is';
             $isfriendly= ($this->config['friendly_alias_urls'] == 1 ? 1 : 0);
             $pref= $this->config['friendly_url_prefix'];
-            $suff= $this->config['friendly_url_suffix'];
-            foreach($tmp as $key){
-
-                $keyID = is_numeric($key)? $key : $NamesAliases[$key];
-
-                if ($this->config['seostrict']=='1'){
-                   $friendlyurl= $this->toAlias( $this->makeFriendlyURL($pref,$suff,$aliases[$keyID],$isfolder[$keyID],$key));
-                }else{
-                   $friendlyurl= $this->makeFriendlyURL($pref,$suff,$aliases[$keyID],$isfolder[$keyID],$key);
-                }
-
-                $documentSource = str_replace('[~'.$key.'~]', $friendlyurl, $documentSource);
-            }
+            $suff= $this->config['friendly_url_suffix'];            
+            $documentSource = preg_replace_callback(
+                $in,
+                function($m) use($aliases, $isfolder, $isfriendly, $pref, $suff) {
+                    global $modx;
+                    $thealias = $aliases[$m[1]];
+                    $thefolder = $isfolder[$m[1]];
+                    $found_friendlyurl = ($modx->config['seostrict'] == '1' ? $modx->toAlias($modx->makeFriendlyURL($pref, $suff, $thealias, $thefolder, $m[1])) : $modx->makeFriendlyURL($pref, $suff, $thealias, $thefolder, $m[1]));
+                    $not_found_friendlyurl = $modx->makeFriendlyURL($pref, $suff, $m[1]);
+                    $out = ($isfriendly && isset($thealias) ? $found_friendlyurl : $not_found_friendlyurl);
+                    return $out;
+                },
+                $documentSource
+            );          
 
         } else {
             $in= '!\[\~([a-zA-Z_-\s0-9]+)\~\]!is';
             $out= "index.php?id=" . '\1';
             $documentSource= preg_replace($in, $out, $documentSource);
         }
-		
+        
         return $documentSource;
     }
 	
@@ -1883,7 +1933,17 @@ class DocumentParser {
         }
         return $parents;
     }
-
+    
+    function getUltimateParentId($id,$top=0) {
+        $i=0;
+        while ($id &&$i<20) {
+            if($top==$this->aliasListing[$id]['parent']) break;
+            $id = $this->aliasListing[$id]['parent'];
+            $i++;
+        }
+        return $id;
+    }
+    
     /**
      * Returns an array of child IDs belonging to the specified parent.
      *
@@ -1895,10 +1955,15 @@ class DocumentParser {
     function getChildIds($id, $depth= 10, $children= array ()) {
         if ($this->config['aliaslistingfolder'] == 1) {
 
-            $res = $this->db->select("id,alias,isfolder", $this->getFullTableName('site_content'),  "parent IN (".$id.") AND deleted = '0'");
+			$res = $this->db->select("id,alias,isfolder,parent", $this->getFullTableName('site_content'),  "parent IN (".$id.") AND deleted = '0'");
             $idx = array();
             while( $row = $this->db->getRow( $res ) ) {
-                $children[$row['alias']] = $row['id'];
+				$pAlias = '';
+				if( isset( $this->aliasListing[$row['parent']] )) {
+					$pAlias .= !empty( $this->aliasListing[$row['parent']]['path'] ) ? $this->aliasListing[$row['parent']]['path'] .'/' : '';
+					$pAlias .= !empty( $this->aliasListing[$row['parent']]['alias'] ) ? $this->aliasListing[$row['parent']]['alias'] .'/' : '';
+				};
+				$children[$pAlias.$row['alias']] = $row['id'];
                 if ($row['isfolder']==1) $idx[] = $row['id'];
             }
             $depth--;
@@ -2380,6 +2445,22 @@ class DocumentParser {
 		}
 	}
 	
+    function getField($field='content', $docid='') {
+        if(empty($docid) && isset($this->documentIdentifier))
+            $docid = $this->documentIdentifier;
+        elseif(!preg_match('@^[0-9]+$@',$docid))
+            $docid = $this->getIdFromAlias($identifier);
+        
+        if(empty($docid)) return false;
+        
+        $doc = $this->getDocumentObject('id', $docid);
+        if(is_array($doc[$field])) {
+            $tvs= $this->getTemplateVarOutput($field, $docid,null);
+            return $tvs[$field];
+        }
+        return $doc[$field];
+    }
+    
     /**
      * Returns the page information as database row, the type of result is
      * defined with the parameter $rowMode
@@ -2524,7 +2605,7 @@ class DocumentParser {
 			$args = ltrim($args, '?&');
 			$_ = strpos($f_url_prefix, '?');
 			
-			if($this->config['friendly_urls'] === '1' && $_ === false){
+			if($_ === false){
 				$args = "?{$args}";
 			}else{
 				$args = "&{$args}";
@@ -3390,16 +3471,16 @@ class DocumentParser {
 
         if(!empty($context)){
             if(is_scalar($context) && isset($_SESSION[$context . 'Validated'])){
-                $out = $_SESSION[$context . 'Shortname'];
+                $out = stripslashes($_SESSION[$context . 'Shortname']);
             }
         }else{
             switch(true){
                 case ($this->isFrontend() && isset ($_SESSION['webValidated'])):{
-                    $out = $_SESSION['webShortname'];
+                    $out = stripslashes($_SESSION['webShortname']);
                     break;
                 }
                 case ($this->isBackend() && isset ($_SESSION['mgrValidated'])):{
-                    $out = $_SESSION['mgrShortname'];
+                    $out = stripslashes($_SESSION['mgrShortname']);
                     break;
                 }
             }
@@ -3472,16 +3553,16 @@ class DocumentParser {
      *                            Default: false
      * @return string|array
      */
-    function getUserDocGroups($resolveIds= false) {
-        if ($this->isFrontend() && isset ($_SESSION['webDocgroups']) && isset ($_SESSION['webValidated'])) {
-            $dg= $_SESSION['webDocgroups'];
-            $dgn= isset ($_SESSION['webDocgrpNames']) ? $_SESSION['webDocgrpNames'] : false;
+    function getUserDocGroups($resolveIds = false) {
+        if ($this->isFrontend() && isset($_SESSION['webDocgroups']) && isset($_SESSION['webValidated'])) {
+            $dg = $_SESSION['webDocgroups'];
+            $dgn = isset($_SESSION['webDocgrpNames']) ? $_SESSION['webDocgrpNames'] : false;
         } else
-            if ($this->isBackend() && isset ($_SESSION['mgrDocgroups']) && isset ($_SESSION['mgrValidated'])) {
-                $dg= $_SESSION['mgrDocgroups'];
-                $dgn= isset ($_SESSION['mgrDocgrpNames']) ? $_SESSION['mgrDocgrpNames'] : false;
+            if ($this->isBackend() && isset($_SESSION['mgrDocgroups']) && isset($_SESSION['mgrValidated'])) {
+                $dg = $_SESSION['mgrDocgroups'];
+                $dgn = isset($_SESSION['mgrDocgrpNames']) ? $_SESSION['mgrDocgrpNames'] : false;
             } else {
-                $dg= '';
+                $dg = '';
             }
         if (!$resolveIds)
             return $dg;
@@ -3491,9 +3572,10 @@ class DocumentParser {
             else
                 if (is_array($dg)) {
                     // resolve ids to names
+                    $dgn = array();
                     $ds = $this->db->select('name', $this->getFullTableName("documentgroup_names"), "id IN (".implode(",", $dg).")");
-                    while ($row= $this->db->getRow($ds))
-                        $dgn[count($dgn)]= $row['name'];
+                    while ($row = $this->db->getRow($ds))
+                        $dgn[] = $row['name'];
                     // cache docgroup names to session
                     if ($this->isFrontend())
                         $_SESSION['webDocgrpNames']= $dgn;
@@ -3787,7 +3869,6 @@ class DocumentParser {
 
                 // load default params/properties
                 $parameter= $this->parseProperties($pluginProperties);
-				
                 if(!is_array($parameter)){
                     $parameter = array();
                 }
@@ -3830,9 +3911,15 @@ class DocumentParser {
                     $pvTmp= explode(";", trim($pTmp[1]));
                     if ($pvTmp[1] == 'list' && $pvTmp[3] != "")
                         $parameter[trim($pTmp[0])]= $pvTmp[3]; //list default
-                    else
-                        if ($pvTmp[1] != 'list' && $pvTmp[2] != "")
-                            $parameter[trim($pTmp[0])]= $pvTmp[2];
+                    else {
+                        if($pvTmp[1] == 'list-multi' && $pvTmp[3] != "") 
+				$parameter[trim($pTmp[0])]= $pvTmp[3]; // list-multi
+			else{
+				if ($pvTmp[1] != 'list' && $pvTmp[2] != ""){
+					$parameter[trim($pTmp[0])]= $pvTmp[2];
+				}
+			}
+                    }
                 }
             }
         }

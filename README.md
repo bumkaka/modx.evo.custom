@@ -6,7 +6,62 @@ All stable features you may found at  http://modx.com.ua
 Сборка обзавеласть собственным сайтом: http://modx.com.ua
 Так же рекоменую скачивать сборку с сайта так как на гитхаб не всегда стабильный релиз!!!
 
-текущая версия 1.1b-d7.1.1  (09.06.2015)
+
+1.1RC-d7.1.6  (25.02.2016)
+=======================================================
+- rename folders libs to lib 
+- add DocLister 
+- fix error if no folders and turn on AliasListing for Folders
+- fix phpthumb for image with ext jpeg
+- turn on TinyMCE4 after install 
+- scrollWork: console.log deleted and fix bug 
+- добавлен Укрианский язык для админки
+- исправлена ошибка с системными плейсхолдерами(была в версии 7.1.5 затянул с оф ветки)
+- добавленна поддержка темы MODxPress (можно экшены теперь переносить в папку темы и менять под себя)
+- исправлен язык в tinyMCE теперь подхватывает нужный
+- исправленно Tiny MCE Emmet - конфликт с HTML5 тегами header и footer
+- Fix render properties menu
+
+
+1.1RC-d7.1.5  (09.01.2016)
+=======================================================
+- TinyMCE4 (нужно вынести настройки в настройки в остальном все ок)
+- KCFinder 2.54 + поддержка работы на мобаил
+- добавил в DocManager обработку @EVAL
+- fix Капча 2 eForm #194
+
+
+1.1b-d7.1.4  (29.12.2015)
+=======================================================
+- Поддержка PHP7
+- Обновление install с mysql до  mysqli (для php7)
+- eForm валидный html для  input  с типом file и image 
+- Обновление robots.txt
+- Замена __autoload на spl_autoload_register
+- fix рендер параметров для типа list-multi
+- изменение функции rewriteUrls по ошибке (для php7) 
+- ctrl + S, cmd + S теперь работают в админке для сохранения 
+
+
+1.1b-d7.1.3  (02.11.2015)
+=======================================================
+- используем Mysqli по умолчанию (для новой установки, при обновлении меняем в файле config.inc.php руками)
+- mainIframe remember scroll position after Save
+- update CodeMirror main script to 5.6 (Now work on iOS)  
+- fix login.tpl for mobile
+- fix windows width on mobile
+
+
+1.1b-d7.1.2  (06.07.2015)
+=======================================================
+- Breadcrumbs 1.0.5 (добавил параметр ignoreAliasVisible)
+- Ditto fix &start=0 
+- fix lib resourse.php (fix edit document)
+- codemirror add in settings indentWithTabs
+- revert getTagsFromContent (fix for [[snippet]]> )
+
+
+1.1b-d7.1.1  (09.06.2015)
 =======================================================
 - Исправление ошибок версии 1.1b-d7.1 (Некорректная обработка результатов плагинов, Class 'SMTP' not found, Refactor - $modx->getTagsFromContent() Speed up!!!,)
 - eForm добавил проверку номера телефона

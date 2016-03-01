@@ -195,8 +195,8 @@ function confirmLangChange(el, lkey, elupd){
         <script type="text/javascript">tpSettings.addTabPage( document.getElementById( "tabPage2" ) );</script>
         <table border="0" cellspacing="0" cellpadding="3">
             <tr>
-              <td nowrap class="warning"><?php echo htmlspecialchars($_lang["sitename_title"]) ?></td>
-              <td ><input onchange="documentDirty=true;" type='text' maxlength='255' style="width: 200px;" name="site_name" value="<?php echo isset($site_name) ? htmlspecialchars($site_name) : "My MODX Site" ; ?>" /></td>
+              <td nowrap class="warning"><?php echo $modx->htmlspecialchars($_lang["sitename_title"]) ?></td>
+              <td ><input onchange="documentDirty=true;" type='text' maxlength='255' style="width: 200px;" name="site_name" value="<?php echo isset($site_name) ? $modx->htmlspecialchars($site_name) : "My MODX Site" ; ?>" /></td>
             </tr>
             <tr>
               <td width="200">&nbsp;</td>
@@ -480,7 +480,7 @@ function confirmLangChange(el, lkey, elupd){
           </tr>
           <tr>
             <td nowrap class="warning" valign="top"><?php echo $_lang["custom_contenttype_title"] ?></td>
-            <td><input name="txt_custom_contenttype" type="text" maxlength="100" style="width: 200px;" value="" /> <input type="button" value="<?php echo $_lang["add"]; ?>" onclick='addContentType()' /><br />
+            <td><input name="txt_custom_contenttype" type="text" maxlength="100" style="width: 200px;height:100px" value="" /> <input type="button" value="<?php echo $_lang["add"]; ?>" onclick='addContentType()' /><br />
             <table border="0" cellspacing="0" cellpadding="0"><tr><td valign="top">
             <select name="lst_custom_contenttype" style="width:200px;" size="5">
             <?php
@@ -589,7 +589,7 @@ function confirmLangChange(el, lkey, elupd){
             </tr>
             <tr>
               <td nowrap class="warning"><?php echo $_lang["valid_hostnames_title"] ?></td>
-              <td ><input onchange="documentDirty=true;" type='text' maxlength='255' style="width: 200px;" name="valid_hostnames" value="<?php echo isset($valid_hostnames) ? htmlspecialchars($valid_hostnames) : "" ; ?>" /></td>
+              <td ><input onchange="documentDirty=true;" type='text' maxlength='255' style="width: 200px;" name="valid_hostnames" value="<?php echo isset($valid_hostnames) ? $modx->htmlspecialchars($valid_hostnames) : "" ; ?>" /></td>
             </tr>
             <tr>
               <td width="200">&nbsp;</td>

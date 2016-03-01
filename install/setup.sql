@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}site_tmplvar_templates` (
 
 CREATE TABLE IF NOT EXISTS `{PREFIX}site_tmplvars` (
 	`id` INT(11) NOT NULL auto_increment,
-	`type` varchar(20) NOT NULL default '',
+	`type` varchar(50) NOT NULL default '',
 	`name` varchar(50) NOT NULL default '',
 	`caption` varchar(80) NOT NULL default '',
 	`description` varchar(255) NOT NULL default '',
@@ -862,7 +862,7 @@ INSERT IGNORE INTO `{PREFIX}system_settings`
 ('use_browser','1'),
 ('rb_base_dir',''),
 ('rb_base_url',''),
-('which_editor','TinyMCE'),
+('which_editor','TinyMCE4'),
 ('fe_editor_lang','{MANAGERLANGUAGE}'),
 ('fck_editor_toolbar','standard'),
 ('fck_editor_autolang','0'),
@@ -873,7 +873,7 @@ INSERT IGNORE INTO `{PREFIX}system_settings`
 ('upload_media','au,avi,mp3,mp4,mpeg,mpg,wav,wmv'),
 ('upload_flash','fla,flv,swf'),
 ('upload_files','bmp,ico,gif,jpeg,jpg,png,psd,tif,tiff,fla,flv,swf,aac,au,avi,css,cache,doc,docx,gz,gzip,htaccess,htm,html,js,mp3,mp4,mpeg,mpg,ods,odp,odt,pdf,ppt,pptx,rar,tar,tgz,txt,wav,wmv,xls,xlsx,xml,z,zip,JPG,JPEG,PNG,GIF'),
-('upload_maxsize','1048576'),
+('upload_maxsize','10485760'),
 ('new_file_permissions','0644'),
 ('new_folder_permissions','0755'),
 ('filemanager_path',''),

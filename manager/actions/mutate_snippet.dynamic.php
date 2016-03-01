@@ -42,6 +42,7 @@ if(isset($_GET['id'])) {
     if($content['locked']==1 && $_SESSION['mgrRole']!=1) {
         $modx->webAlertAndQuit($_lang["error_no_privileges"]);
     }
+    $content['properties'] = str_replace("&", "&amp;", $content['properties']);
 } else {
     $_SESSION['itemname']=$_lang["new_snippet"];
 }
@@ -104,7 +105,7 @@ function showParameters(ctrl) {
             value = decode((ar[2])? ar[2]:'');
 
             // store values for later retrieval
-            if (key && dt=='list') currentParams[key] = [desc,dt,value,ar[3]];
+            if (key && dt=='menu' ||dt=='list' || dt=='list-multi') currentParams[key] = [desc,dt,value,ar[3]];
             else if (key) currentParams[key] = [desc,dt,value];
 
             if (dt) {
@@ -133,19 +134,23 @@ function showParameters(ctrl) {
                     c += '</select>';
                     break;
                 case 'list-multi':
-                    value = (ar[3]+'').replace(/^\s|\s$/,"");
-                    arrValue = value.split(",")
+                    value = typeof ar[3] !== 'undefined' ? (ar[3]+'').replace(/^\s|\s$/,"") : '';
+                    arrValue = value.split(",");
                     ls = (ar[2]+'').split(",");
                     if(currentParams[key]==ar[2]) currentParams[key] = ls[0]; // use first list item as default
                     c = '<select name="prop_'+key+'" size="'+ls.length+'" multiple="multiple" style="width:168px" onchange="setParameter(\''+key+'\',\''+dt+'\',this)">';
                     for(i=0;i<ls.length;i++){
                         if(arrValue.length){
+                            var found = false;
                             for(j=0;j<arrValue.length;j++){
-                                if(ls[i]==arrValue[j]){
-                                    c += '<option value="'+ls[i]+'" selected="selected">'+ls[i]+'</option>';
-                                }else{
-                                    c += '<option value="'+ls[i]+'">'+ls[i]+'</option>';
+                                if (ls[i] == arrValue[j]) {
+                                    found = true;
                                 }
+                            }
+                            if(found == true){
+                                c += '<option value="'+ls[i]+'" selected="selected">'+ls[i]+'</option>';
+                            }else{
+                                c += '<option value="'+ls[i]+'">'+ls[i]+'</option>';
                             }
                         }else{
                             c += '<option value="'+ls[i]+'">'+ls[i]+'</option>';
@@ -263,11 +268,11 @@ function decode(s){
                   <option id="stay3" value=""  <?php echo $_REQUEST['stay']=='' ? ' selected="selected"' : ''?>  ><?php echo $_lang['close']?></option>
                 </select>
               </li>
-              <?php
-                if ($_GET['a'] == '22') { ?>
-              <li id="Button2"><a href="#" onclick="duplicaterecord();"><img src="<?php echo $_style["icons_resource_duplicate"]?>" /> <?php echo $_lang["duplicate"]; ?></a></li>
+          <?php if ($_GET['a'] == '23') { ?>
+              <li id="Button6" class="disabled"><a href="#" onclick="duplicaterecord();"><img src="<?php echo $_style["icons_resource_duplicate"]?>" /> <?php echo $_lang["duplicate"]; ?></a></li>
               <li id="Button3" class="disabled"><a href="#" onclick="deletedocument();"><img src="<?php echo $_style["icons_delete_document"] ?>" /> <?php echo $_lang['delete']?></a></li>
               <?php } else { ?>
+              <li id="Button6"><a href="#" onclick="duplicaterecord();"><img src="<?php echo $_style["icons_resource_duplicate"]?>" /> <?php echo $_lang["duplicate"]; ?></a></li>
               <li id="Button3"><a href="#" onclick="deletedocument();"><img src="<?php echo $_style["icons_delete_document"] ?>" /> <?php echo $_lang['delete']?></a></li>
               <?php } ?>
               <li id="Button5"><a href="#" onclick="documentDirty=false;document.location.href='index.php?a=76';"><img src="<?php echo $_style["icons_cancel"]?>" /> <?php echo $_lang['cancel']?></a></li>
@@ -292,7 +297,7 @@ function decode(s){
         <table>
           <tr>
             <th><?php echo $_lang['snippet_name']?>:</th>
-            <td>[[&nbsp;<input name="name" type="text" maxlength="100" value="<?php echo htmlspecialchars($content['name'])?>" class="inputBox" style="width:250px;" onchange="documentDirty=true;">&nbsp;]]<span class="warning" id="savingMessage">&nbsp;</span></td>
+            <td>[[&nbsp;<input name="name" type="text" maxlength="100" value="<?php echo $modx->htmlspecialchars($content['name'])?>" class="inputBox" style="width:250px;" onchange="documentDirty=true;">&nbsp;]]<span class="warning" id="savingMessage">&nbsp;</span></td>
           </tr>
           <tr>
             <th><?php echo $_lang['snippet_desc']?></th>
@@ -305,7 +310,7 @@ function decode(s){
                 <?php
                     include_once(MODX_MANAGER_PATH.'includes/categories.inc.php');
                     foreach(getCategories() as $n=>$v){
-                        echo '<option value="'.$v['id'].'"'.($content['category']==$v['id']? ' selected="selected"':'').'>'.htmlspecialchars($v['category']).'</option>';
+                        echo '<option value="'.$v['id'].'"'.($content['category']==$v['id']? ' selected="selected"':'').'>'.$modx->htmlspecialchars($v['category']).'</option>';
                     }
                 ?>
                 </select>
@@ -328,7 +333,7 @@ function decode(s){
                 <?php echo $_lang['snippet_code']?>
             </div>
             <div class="sectionBody">
-            <textarea dir="ltr" name="post" class="phptextarea" style="width:100%; height:370px;" wrap="<?php echo $content['wrap']== 1 ? "soft" : "off"?>" onchange="documentDirty=true;"><?php echo "<?php"."\n".trim(htmlspecialchars($content['snippet']))."\n"."?>"?></textarea>
+            <textarea dir="ltr" name="post" class="phptextarea" style="width:100%; height:370px;" wrap="<?php echo $content['wrap']== 1 ? "soft" : "off"?>" onchange="documentDirty=true;"><?php echo "<?php"."\n".trim($modx->htmlspecialchars($content['snippet']))."\n"."?>"?></textarea>
             </div>
         </div>    
         <!-- PHP text editor end -->
@@ -353,7 +358,7 @@ function decode(s){
 						'sm.name'
 						);
                     while($row = $modx->db->getRow($ds)){
-                        echo "<option value='".$row['guid']."'".($content['moduleguid']==$row['guid']? " selected='selected'":"").">".htmlspecialchars($row['name'])."</option>";
+                        echo "<option value='".$row['guid']."'".($content['moduleguid']==$row['guid']? " selected='selected'":"").">".$modx->htmlspecialchars($row['name'])."</option>";
                     }
                 ?>
                 </select>
@@ -365,7 +370,7 @@ function decode(s){
           </tr>
           <tr>
             <th valign="top"><?php echo $_lang['snippet_properties']?>:</th>
-            <td valign="top"><input name="properties" type="text" maxlength="65535" value="<?php echo $content['properties']?>" class="inputBox phptextarea" style="width:300px;" onchange="showParameters(this);documentDirty=true;"></td>
+            <td valign="top"><textarea name="properties" maxlength="65535" class="phptextarea" style="width:300px;" onChange='showParameters(this);documentDirty=true;'><?php echo $content['properties']?></textarea></td>
           </tr>
           <tr id="displayparamrow">
             <td valign="top">&nbsp;</td>
